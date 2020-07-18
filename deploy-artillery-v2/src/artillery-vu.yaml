@@ -1,3 +1,8 @@
+#####
+# This script will mimic virutal users
+# 
+# export CHECKEXPECT=true         set environment variable CHECKEXPECT to "true" check the response status code. 
+####
 config:
   target: https:/
   processor: "./my-functions.js"
@@ -152,9 +157,9 @@ scenarios:
         afterResponse: myAfterResponseHandler
         expect:
           - statusCode: 404
-    # - emit:
-    #       channel: connection
-    #       namespace: "/chat"
+    - emit:
+          channel: connection
+          namespace: "/chat"
     - think: 10
   
     

@@ -1,5 +1,6 @@
 var myAfterResponseHandler = function(requestParams, response, context, ee, next){
-  if (requestParams.expect && requestParams.expect.length > 0){
+  const checkExpetion = (process.env.CHECKEXPECT && process.env.CHECKEXPECT.toLowerCase() == 'true') ? true : false;
+  if (checkExpetion && requestParams.expect && requestParams.expect.length > 0){
     const expection = requestParams.expect[0]
     if (expection.statusCode){
        if (response.statusCode == expection.statusCode){
