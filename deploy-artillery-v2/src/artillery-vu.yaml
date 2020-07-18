@@ -1,0 +1,160 @@
+config:
+  target: https:/
+  processor: "./my-functions.js"
+  plugins:
+    publish-metrics:
+      - type: datadog
+        apiKey: "{{ $processEnvironment.DD_API_KEY }}"
+        prefix: "{{ $processEnvironment.DD_PREFIX }}"
+        event:
+          title: "{{ $processEnvironment.DD_EVT_TITLE }}"
+  http:
+    maxSockets: 4
+  phases:
+    - duration: 600
+      arrivalRate: 0.1
+  variables:
+    http-target: "/loganstaging2020apis.esna.com"
+    socket-target: "/loganstaging2020apis-socket.esna.com"
+  payload:
+    - # Each virtual user will read one line
+      path: "../payloads/user-jwts.csv" 
+      fields:
+        - "username"
+        - "spaceid"
+        - "jwt_token"
+  socketio:
+    url: "{\\{ socket-target \\}}"
+    transports:
+      - websocket
+    reconnection: true
+    reconnectionDelay: 1000
+    query:
+      token: "{\\{ jwt_token \\}}"
+      tokenType: jwt
+      EIO: '3'
+      forceNew: true
+      transport: websocket
+
+scenarios:
+  - name: "Land to spaces"
+    engine: "socketio"
+    flow:
+    - get:
+        url: "{{ http-target }}/api/users/me"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+            - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/me/settings"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/me/featuresrollout"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/service-configurations"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/meetingroom/{{ username }}"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/me/spaces?topictype=group&size=20&topicstatus=0&filtertype="
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/me/spaces?topictype=group&size=20&topicstatus=0&filtertype=pinned"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/spaces/{{ spaceid }}/join/"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/users/me/spaces?topictype=direct&size=20"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/topics/{{ spaceid }}/ideas?size=500"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/topics/{{ spaceid }}/tasks?size=500"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/topics/{{ spaceid }}/meetings?size=200"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/topics/{{ spaceid }}/messages/byref?size=30"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 200
+    - get:
+        url: "{{ http-target }}/api/topics/{{ spaceid }}/activemeetings"
+        headers:
+          "content-type": "application/json"
+          "Authorization": "jwt {{ jwt_token }}"
+        afterResponse: myAfterResponseHandler
+        expect:
+          - statusCode: 404
+    # - emit:
+    #       channel: connection
+    #       namespace: "/chat"
+    - think: 10
+  
+    

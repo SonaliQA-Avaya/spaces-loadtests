@@ -22,7 +22,11 @@ module.exports = SocketIoEngine;
 function SocketIoEngine(script) {
   this.config = script.config;
 
-  this.socketioOpts = this.config.socketio || {};
+  // this.socketioOpts = this.config.socketio || {};
+  var socketio_cfg_string = JSON.stringify(this.config.socketio || {})
+  socketio_cfg_string = socketio_cfg_string.replace(/\\*{/g, '{').replace(/\\*}/g, '}')
+  this.socketioOpts = JSON.parse(socketio_cfg_string)
+  
   this.httpDelegate = new EngineHttp(script);
 }
 
@@ -275,18 +279,25 @@ SocketIoEngine.prototype.step = function (requestSpec, ee) {
 
 SocketIoEngine.prototype.loadContextSocket = function(namespace, context, cb) {
   context.sockets = context.sockets || {};
+  let target = this.config.target
+  
 
   if(!context.sockets[namespace]) {
-    let target = this.config.target + namespace;
     let tls = this.config.tls || {};
-
     const socketioOpts = template(this.socketioOpts, context);
+    
     let options = _.extend(
       {},
       socketioOpts, // templated
       tls
     );
 
+    if (options.url){
+      target += options.url
+    }
+    target += namespace;
+    
+    debug("target=", target, 'options=', options)
     let socket = io(target, options);
     context.sockets[namespace] = socket;
     wildcardPatch(socket);

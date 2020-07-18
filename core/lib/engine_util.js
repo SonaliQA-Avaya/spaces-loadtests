@@ -240,6 +240,8 @@ function template(o, context, inPlace) {
 // Mutates the object in place
 function templateObjectOrArray(o, context) {
   deepForEach(o, (value, key, subj, path) => {
+    
+    
     const newPath = template(path, context, true);
 
     let newValue;
