@@ -1,5 +1,5 @@
 FROM node:10-alpine
-LABEL maintainer="team@artillery.io"
+LABEL maintainer="ericd@avaya.com"
 
 WORKDIR /home/node/artillery
 
@@ -14,4 +14,6 @@ COPY package.json package.json
 
 RUN npm --ignore-scripts --production install
 
-ENTRYPOINT ["/home/node/artillery/bin/artillery"]
+RUN mkdir -p /test
+COPY deploy-artillery-v2/src/start.sh /test/loop.sh
+# ENTRYPOINT ["/home/node/artillery/bin/artillery"]

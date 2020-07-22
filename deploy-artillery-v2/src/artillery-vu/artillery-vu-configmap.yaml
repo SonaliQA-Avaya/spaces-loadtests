@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esArtillery_config
+data:
+  DD_PREFIX: 
+  
