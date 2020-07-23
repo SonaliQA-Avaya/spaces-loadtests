@@ -1,6 +1,8 @@
 FROM node:10-alpine
 LABEL maintainer="ericd@avaya.com"
 
+RUN apk add --no-cache --upgrade bash
+
 WORKDIR /home/node/artillery
 
 COPY bin bin
@@ -14,6 +16,8 @@ COPY package.json package.json
 
 RUN npm --ignore-scripts --production install
 
-RUN mkdir -p /test
-COPY deploy-artillery-v2/src/start.sh /test/loop.sh
-# ENTRYPOINT ["/home/node/artillery/bin/artillery"]
+RUN mkdir -p /app
+COPY deploy-artillery-v2/loop.sh /app/loop.sh
+RUN chmod 755 /app/loop.sh
+WORKDIR /app
+
