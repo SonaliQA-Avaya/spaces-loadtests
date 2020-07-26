@@ -7,15 +7,15 @@ directory=""
 
 while [ "$1" != "" ]; do
   case $1 in
-    -p | --project ) shift
-                  gcp_project=$1
-                  ;;
-    -c | --cluster) shift
-                  cluster_name=$1
-                  ;;
-    -z | --zone) shift
-                 zone=$1
-                 ;;
+    # -p | --project ) shift
+    #               gcp_project=$1
+    #               ;;
+    # -c | --cluster) shift
+    #               cluster_name=$1
+    #               ;;
+    # -z | --zone) shift
+    #              zone=$1
+    #              ;;
     -d | --directory) shift
                  directory=$1
                  ;;
@@ -30,9 +30,9 @@ if [ "$need_help" = true ]; then
   echo "Options:"
   echo ""
   echo "-h, --help      output usage information"
-  echo "-p, --project   The project name in gcp, default value is onesnastaging"
-  echo "-c, --cluster   The cluster name of kubernetes, default value is artillery-vu"
-  echo "-z, --zone      THe zone of the the cluster, default value is us-central1-a"
+  # echo "-p, --project   The project name in gcp, default value is onesnastaging"
+  # echo "-c, --cluster   The cluster name of kubernetes, default value is artillery-vu"
+  # echo "-z, --zone      THe zone of the the cluster, default value is us-central1-a"
   echo "-d, --directory The directory of the files will be executed in kubernetes."
   exit
 fi
@@ -45,6 +45,8 @@ else
   directory=$(echo "$directory" | sed -E "s#/+\$##g")
   echo "Will deploy the directory ${directory} to the cluster"  
 fi
+
+{ read gcp_project; read cluster_name; read zone;} < ~/.esArtillery.config
 
 echo "GCP Project= $gcp_project"
 echo "Cluster=     $cluster_name" 
@@ -168,5 +170,5 @@ else
   exit 1
 fi
 
-echo "Go to datadog and open dashboard loganstaging2020-loadtest, change metrics name to: ${dd_metric}"
+echo "Go to datadog. There are new matrices with prefix: ${dd_metric}"
 

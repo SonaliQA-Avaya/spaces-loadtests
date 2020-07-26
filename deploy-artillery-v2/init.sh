@@ -270,4 +270,10 @@ else
   exit 1
 fi
 
+echo "====================== Save config =============================="
+echo "$gcp_project
+$cluster_name
+$zone
+$size" >> ~/.esArtillery.config
+
 echo "Done"
