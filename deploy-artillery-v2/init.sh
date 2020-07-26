@@ -107,6 +107,7 @@ else
 fi
 
 #If the cluster not existed then create it.
+should_remove_daemon=false
 if [ "$need_create_cluster" = true ]; then
   echo " ================   Create a cluster ======================"
   CMD="gcloud container clusters create $cluster_name --zone=$zone --machine-type=$machine_type --project=$gcp_project  --num-nodes=$size --no-enable-ip-alias"
@@ -130,6 +131,7 @@ if [ "$need_create_cluster" = true ]; then
     echo "Create another node-pool in $cluster_name failed!"
     exit 1
   fi
+  should_remove_daemo=true
 else
   if [[ "$cluster_size_changed" == true ]]; then
     echo "===================  Change cluster $cluster_name size now ====================="
@@ -143,6 +145,7 @@ else
       echo "Create cluster $cluster_name size to $size failed!"
       exit 1
     fi
+    should_remove_daemon=true
   fi
 fi
 
@@ -268,6 +271,36 @@ if [[ $status -eq 0 ]]; then
 else
   echo "push docker to docker image repository failed"
   exit 1
+fi
+
+if [ "$should_remove_daemon" = true ]; then
+  #Remove existed installed daemonset
+  echo "====================    Remove existed installed daemonset   ======================="
+  CMD="kubectl get daemonset"
+  echo $CMD
+  CMD_RESULT=$($CMD)
+  status=$?
+  if [[ $status -eq 0 ]]; then
+    line_idx=0
+    while read -r line
+    do
+      if [[ $line_idx -gt 0 ]]; then
+        daemonset_name=$(echo "$line" | sed -E 's# +.*##g')
+        CMD="kubectl delete daemonset ${daemonset_name}"
+        echo $CMD
+        $($CMD)
+        status=$?
+        if [[ $status -eq 0 ]]; then
+          echo "Delete the daemonset ${daemonset_name} successfully"
+        else 
+          echo "Delete the daemonset ${daemonset_name} failed"
+        fi
+      fi
+      line_idx=$(($line_idx + 1))
+    done <<< "$CMD_RESULT"
+  else
+    echo "There is no daemonset installed yet."
+  fi
 fi
 
 echo "====================== Save config =============================="
