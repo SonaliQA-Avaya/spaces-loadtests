@@ -8,8 +8,9 @@ zone="us-central1-a"
 machine_type="n1-standard-1"
 
 max_node=100 
-min_node=3
+min_node=0
 need_help=false
+other_pool_size=1
 
 while [ "$1" != "" ]; do
   case $1 in
@@ -67,9 +68,18 @@ echo "size =       $size"
 echo "zone=        $zone"
 echo "machine=     $machine_type"
 
+read -p "Are you sure (Y/n)? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  : ;
+else
+  exit 
+fi
+
 #Check cluster existed or not
 need_create_cluster=false
-echo "Checking the existence of the cluster"
+echo "===============  Check the existence of the cluster   ================"
 CMD="gcloud container clusters list --project=$gcp_project --filter=name:$cluster_name --format=\"table(name, NUM_NODES)\""
 echo $CMD
 CMD_RESULT=$(gcloud container clusters list --project=$gcp_project --filter=name:$cluster_name --format="table(name, NUM_NODES, LOCATION)")
@@ -82,6 +92,7 @@ else
 fi
 
 current_size=$(echo "$CMD_RESULT" | grep "$cluster_name" | sed -E "s#$cluster_name *##g" | sed -E "s# +.*##g")
+current_size="$(($current_size-$other_pool_size))"
 echo "Current size of cluster is ${current_size}"
 
 current_location=$(echo "$CMD_RESULT" | grep "$cluster_name" | sed -E "s#[a-zA-Z0-9-]+ +[0-9]+ +##g")
@@ -97,7 +108,7 @@ fi
 
 #If the cluster not existed then create it.
 if [ "$need_create_cluster" = true ]; then
-  echo "Create a cluster now"
+  echo " ================   Create a cluster ======================"
   CMD="gcloud container clusters create $cluster_name --zone=$zone --machine-type=$machine_type --project=$gcp_project  --num-nodes=$size --no-enable-ip-alias"
   echo $CMD
   $CMD
@@ -108,9 +119,20 @@ if [ "$need_create_cluster" = true ]; then
     echo "Create cluster $cluster_name failed!"
     exit 1
   fi
+  echo " ================   Create anthor nodepool for datadog agent ======================"
+  CMD="gcloud container node-pools create other-pool --cluster=$cluster_name --zone=$zone --machine-type=$machine_type --project=$gcp_project  --num-nodes=$other_pool_size"
+  echo $CMD
+  $CMD
+  status=$?
+  if [[ $status -eq 0 ]]; then
+    echo "Create another node-pool in $cluster_name successfully!"
+  else
+    echo "Create another node-pool in $cluster_name failed!"
+    exit 1
+  fi
 else
   if [[ "$cluster_size_changed" == true ]]; then
-    echo "Change cluster $cluster_name size now"
+    echo "===================  Change cluster $cluster_name size now ====================="
     CMD="gcloud container clusters resize $cluster_name --node-pool=default-pool --num-nodes=$size --project=$gcp_project --region=$current_location"
     echo $CMD
     $CMD
@@ -125,7 +147,7 @@ else
 fi
 
 #Connect to the cluster
-echo "Connect to the cluster now"
+echo "===================   Connect to the cluster now ======================="
 CMD="gcloud container clusters get-credentials $cluster_name --zone=$zone --project=$gcp_project"
 echo $CMD
 $CMD
@@ -139,60 +161,36 @@ fi
 
 #Check reload being installed
 #https://github.com/stakater/Reloader
-install_reloader=false
-CMD="kubectl get deployment reloader-reloader"
-echo $CMD
-$CMD
-status=$?
-if [[ $status -eq 0 ]]; then
-  echo "The app reloader-reloader was installed already."
-else
-  echo "The app reloader-reloader is not installed yet."
-  install_reloader=true
-fi
+# echo "===================   Check the app reload being installed  ======================="
+# install_reloader=false
+# CMD="kubectl get deployment reloader-reloader"
+# echo $CMD
+# $CMD
+# status=$?
+# if [[ $status -eq 0 ]]; then
+#   echo "The app reloader-reloader was installed already."
+# else
+#   echo "The app reloader-reloader is not installed yet."
+#   install_reloader=true
+# fi
 
 #If reloader is not installed, install it.
-if [[ "$install_reloader" = true ]]; then
-  echo "Install reloader now"
-  CMD="kubectl apply -f https://raw.githubusercontent.com/stakater/Reloader/master/deployments/kubernetes/reloader.yaml"
-  echo $CMD
-  $CMD
-  status=$?
-  if [[ $status -eq 0 ]]; then
-    echo "Install reloader successfully!"
-  else
-    echo "Install reloader failed!"
-  fi
-fi
-
-#Remove existed installed daemonset
-CMD="kubectl get daemonset"
-echo $CMD
-CMD_RESULT=$($CMD)
-status=$?
-if [[ $status -eq 0 ]]; then
-  line_idx=0
-  while read -r line
-  do
-    if [[ $line_idx -gt 0 ]]; then
-      daemonset_name=$(echo "$line" | sed -E 's# +.*##g')
-      CMD="kubectl delete daemonset ${daemonset_name}"
-      echo $CMD
-      $($CMD)
-      status=$?
-      if [[ $status -eq 0 ]]; then
-        echo "Delete the daemonset ${daemonset_name} successfully"
-      else 
-        echo "Delete the daemonset ${daemonset_name} failed"
-      fi
-    fi
-    line_idx=$(($line_idx + 1))
-  done <<< "$CMD_RESULT"
-else
-  echo "There is no daemonset installed yet."
-fi
+# if [[ "$install_reloader" = true ]]; then
+#   echo "=====================  Install the App reloader ========================="
+#   CMD="kubectl apply -f https://raw.githubusercontent.com/stakater/Reloader/master/deployments/kubernetes/reloader.yaml"
+#   echo $CMD
+#   $CMD
+#   status=$?
+#   if [[ $status -eq 0 ]]; then
+#     echo "Install reloader successfully!"
+#   else
+#     echo "Install reloader failed!"
+#     exit 1
+#   fi
+# fi
 
 #Check secret of Datadog api key
+echo "=====================  Check secret of Datadog api key ========================="
 CMD="kubectl get secret es-artillery-secret"
 echo $CMD
 CMD_RESULT=$($CMD)
@@ -200,6 +198,7 @@ status=$?
 if [[ $status -eq 0 ]]; then
   echo "The secret of es-artillery-secret is existed."
 else
+  echo "=====================  Add secret of Datadog api key ========================="
   echo Please input datadog api key:
   read -s DD_API_KEY
   DD_API_KEY_MASK=$(echo "$DD_API_KEY" | sed -E 's/(.{6}).{20}/\1.../')
@@ -214,3 +213,61 @@ else
   fi
 fi 
 
+# Check datadog agent installed
+echo "===================   Check datadog agent installed  ======================="
+install_datadog_agent=false
+CMD="kubectl get deployment datadog-agent"
+echo $CMD
+$CMD
+status=$?
+if [[ $status -eq 0 ]]; then
+  echo "The app install_datadog_agent was installed already."
+else
+  echo "The app install_datadog_agent is not installed yet."
+  install_datadog_agent=true
+fi
+
+# If datadog agent is not installed, install it.
+if [[ "$install_datadog_agent" = true ]]; then
+  echo "=====================  Install datadog agent ========================="
+  CMD="kubectl apply -f ./k8s/datadog-agent-vanilla.yaml"
+  echo $CMD
+  $CMD
+  status=$?
+  if [[ $status -eq 0 ]]; then
+    echo "Install datadog agent successfully!"
+  else
+    echo "Install datadog agent failed!"
+    exit 1
+  fi
+fi
+
+#Prepare docker image and push to docker image repository
+echo "=====================  Prepare docker image ========================="
+cur_dir=$(pwd)
+cd ..
+CMD="docker build -t gcr.io/${gcp_project}/es-artillery-workers:latest ."
+echo ${CMD}
+${CMD}
+status=$?
+if [[ $status -eq 0 ]]; then
+  echo "build docker image successfully!"
+else
+  echo "build docker image failed"
+  exit 1
+fi
+cd ${curdir}
+
+echo "=====================  Deploy docker image ========================="
+CMD="docker push gcr.io/${gcp_project}/es-artillery-workers:latest"
+echo ${CMD}
+${CMD}
+status=$?
+if [[ $status -eq 0 ]]; then
+  echo "push docker to docker image repository successfully"
+else
+  echo "push docker to docker image repository failed"
+  exit 1
+fi
+
+echo "Done"

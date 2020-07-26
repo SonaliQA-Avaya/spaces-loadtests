@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: esArtillery-uv-config
-data:
-  DD_PREFIX: es-artillery-uv
-  DD_EVT_TITLE: es-artillery-uv-evt
-  

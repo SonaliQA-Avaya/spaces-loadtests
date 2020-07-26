@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: es-artillery
+  labels:
+    name: es-artillery
+    role: worker
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      name: es-artillery
+  template:
+    metadata:
+      labels:
+        name: es-artillery
+        role: worker
+    spec:
+      containers:
+      - name: es-artillery
+        image: gcr.io/GCE_PROJECT/es-artillery-workers:latest
+        imagePullPolicy: Always
+        command:
+        - /app/loop.sh
+        env:
+        - name: DATADOG_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: es-artillery-secret
+              key: DD_API_KEY
+        - name: DD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: es-artillery-secret
+              key: DD_API_KEY
+        - name: DD_PREFIX
+          valueFrom:
+            configMapKeyRef:
+              name: es-artillery-config
+              key: DD_PREFIX
+        - name: DD_EVT_TITLE
+          valueFrom:
+            configMapKeyRef:
+              name: es-artillery-config
+              key: DD_EVT_TITLE
+        - name: ARTILLERYEXE
+          value: /home/node/artillery/bin/artillery
+        - name: ARTILLERYFILE
+          value: /app/artillery-case/artillery-main.yaml
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: artillery-case-vol
+          mountPath: /app/artillery-case
+          readOnly: true
+      volumes:
+      - name: artillery-case-vol
+        secret:
+          secretName: artillery-case
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+          
+        
+      
+        
+
+

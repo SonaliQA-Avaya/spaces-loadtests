@@ -281,6 +281,10 @@ SocketIoEngine.prototype.loadContextSocket = function(namespace, context, cb) {
   context.sockets = context.sockets || {};
   let target = this.config.target
   
+  
+  if (!namespace && this.socketioOpts.namespace){
+    namespace = this.socketioOpts.namespace
+  }
 
   if(!context.sockets[namespace]) {
     let tls = this.config.tls || {};
@@ -297,7 +301,7 @@ SocketIoEngine.prototype.loadContextSocket = function(namespace, context, cb) {
     }
     target += namespace;
     
-    debug("target=", target, 'options=', options)
+    debug("target=", target, 'options=', options, 'namespace=', namespace)
     let socket = io(target, options);
     context.sockets[namespace] = socket;
     wildcardPatch(socket);

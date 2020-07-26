@@ -6,13 +6,16 @@
 config:
   target: https:/
   processor: "./my-functions.js"
+
+  #BEGIN_NONE_LOCAL
   plugins:
     publish-metrics:
-      - type: datadog
-        apiKey: "{{ $processEnvironment.DD_API_KEY }}"
+      - type: statsd
+        host: datadog-agent.default.svc.cluster.local
+        port: 8125
         prefix: "{{ $processEnvironment.DD_PREFIX }}"
-        event:
-          title: "{{ $processEnvironment.DD_EVT_TITLE }}"
+  #END_NONE_LOCAL
+
   http:
     maxSockets: 4
   phases:
@@ -23,7 +26,7 @@ config:
     socket-target: "/loganstaging2020apis-socket.esna.com"
   payload:
     - # Each virtual user will read one line
-      path: "../payloads/user-jwts.csv" 
+      path: "./user-jwts.csv" 
       fields:
         - "username"
         - "spaceid"
@@ -34,6 +37,7 @@ config:
       - websocket
     reconnection: true
     reconnectionDelay: 1000
+    namespace: /chat
     query:
       token: "{\\{ jwt_token \\}}"
       tokenType: jwt
@@ -160,6 +164,6 @@ scenarios:
     - emit:
           channel: connection
           namespace: "/chat"
-    - think: 10
+    - think: 600
   
     

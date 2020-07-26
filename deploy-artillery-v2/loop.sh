@@ -10,7 +10,7 @@ trap cleanup SIGINT SIGTERM
 
 #We can set environment variable ARTILLERYEXE to set artillery execute file path.
 artillery_exe="artillery"
-if [[ -z "ARTILLERYEXE" ]]; then
+if [[ "ARTILLERYEXE" ]]; then
   artillery_exe=${ARTILLERYEXE}
 fi
 
@@ -19,7 +19,7 @@ fi
 if [[ -z "ARTILLERYFILE" ]]; then
   echo "There is no artillery file defined in environment variable ARTILLERYFILE"
 else
-  CMD="$artillery_exe run ${ARTILLERYFILE}"
+  CMD="${artillery_exe} run ${ARTILLERYFILE}"
   echo $CMD
   $CMD
 fi
