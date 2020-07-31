@@ -8,6 +8,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  # Add bestol cluster FQDN
   selector:
     matchLabels:
       name: es-artillery
@@ -17,6 +18,11 @@ spec:
         name: es-artillery
         role: worker
     spec:
+      # hostAliases:
+      # - ip: "34.107.155.102"
+      #   hostnames:
+      #   - "spacescandidateapis.avayacloud.com"
+      #   - "spacescandidateapis-socket.avayacloud.com"
       containers:
       - name: es-artillery
         image: gcr.io/GCE_PROJECT/es-artillery-workers:latest

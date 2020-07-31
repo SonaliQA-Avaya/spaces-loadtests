@@ -20,10 +20,12 @@ config:
     maxSockets: 4
   phases:
     - duration: 600
-      arrivalRate: 0.1
+      arrivalRate: 20
   variables:
     http-target: "/loganstaging2020apis.esna.com"
     socket-target: "/loganstaging2020apis-socket.esna.com"
+    # http-target: "/spacescandidateapis.avayacloud.com"
+    # socket-target: "/spacescandidateapis-socket.avayacloud.com"
   payload:
     - # Each virtual user will read one line
       path: "./user-jwts.csv" 
