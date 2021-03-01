@@ -1,0 +1,531 @@
+tjia@tfeng-mac:~/Projects/tjia/Logan/load-test/logs$ ./analysis.js -f 20171004.log
+[2017-10-10T14:04:04-04:00] [#8026] [INFO] [analysis.log] - >>> Analysis log...
+[2017-10-10T14:04:04-04:00] [#8026] [DEBUG] [analysis.log] -     Options: {"file":"20171004.log","verbose":false}
+Total: 25315
+Errors: 0
+By Minute [ [ '0000', 190 ],
+  [ '0015', 127 ],
+  [ '0030', 154 ],
+  [ '0045', 194 ],
+  [ '0100', 113 ],
+  [ '0115', 136 ],
+  [ '0130', 107 ],
+  [ '0145', 118 ],
+  [ '0200', 129 ],
+  [ '0215', 90 ],
+  [ '0230', 129 ],
+  [ '0245', 137 ],
+  [ '0300', 129 ],
+  [ '0315', 123 ],
+  [ '0330', 128 ],
+  [ '0345', 151 ],
+  [ '0400', 206 ],
+  [ '0415', 150 ],
+  [ '0430', 182 ],
+  [ '0445', 176 ],
+  [ '0500', 2153 ],
+  [ '0515', 476 ],
+  [ '0530', 180 ],
+  [ '0545', 213 ],
+  [ '0600', 150 ],
+  [ '0615', 159 ],
+  [ '0630', 352 ],
+  [ '0645', 344 ],
+  [ '0700', 253 ],
+  [ '0715', 178 ],
+  [ '0730', 202 ],
+  [ '0745', 218 ],
+  [ '0800', 188 ],
+  [ '0815', 197 ],
+  [ '0830', 140 ],
+  [ '0845', 170 ],
+  [ '0900', 233 ],
+  [ '0915', 302 ],
+  [ '0930', 488 ],
+  [ '0945', 278 ],
+  [ '1000', 300 ],
+  [ '1015', 548 ],
+  [ '1030', 446 ],
+  [ '1045', 423 ],
+  [ '1100', 515 ],
+  [ '1115', 412 ],
+  [ '1130', 446 ],
+  [ '1145', 441 ],
+  [ '1200', 393 ],
+  [ '1215', 356 ],
+  [ '1230', 353 ],
+  [ '1245', 309 ],
+  [ '1300', 477 ],
+  [ '1315', 562 ],
+  [ '1330', 457 ],
+  [ '1345', 359 ],
+  [ '1400', 296 ],
+  [ '1415', 311 ],
+  [ '1430', 302 ],
+  [ '1445', 463 ],
+  [ '1500', 467 ],
+  [ '1515', 413 ],
+  [ '1530', 416 ],
+  [ '1545', 268 ],
+  [ '1600', 243 ],
+  [ '1615', 406 ],
+  [ '1630', 245 ],
+  [ '1645', 197 ],
+  [ '1700', 162 ],
+  [ '1715', 148 ],
+  [ '1730', 280 ],
+  [ '1745', 155 ],
+  [ '1800', 154 ],
+  [ '1815', 138 ],
+  [ '1830', 153 ],
+  [ '1845', 171 ],
+  [ '1900', 145 ],
+  [ '1915', 182 ],
+  [ '1930', 163 ],
+  [ '1945', 159 ],
+  [ '2000', 156 ],
+  [ '2015', 197 ],
+  [ '2030', 272 ],
+  [ '2045', 172 ],
+  [ '2100', 232 ],
+  [ '2115', 147 ],
+  [ '2130', 142 ],
+  [ '2145', 149 ],
+  [ '2200', 151 ],
+  [ '2215', 147 ],
+  [ '2230', 138 ],
+  [ '2245', 155 ],
+  [ '2300', 134 ],
+  [ '2315', 154 ],
+  [ '2330', 188 ],
+  [ '2345', 204 ] ]
+By URI >>>
+- count: 12
+  method: POST
+  uri: '/api/users/me/topics/:id/preference'
+- count: 12
+  method: GET
+  uri: /login
+- count: 14
+  method: POST
+  uri: /api/spacedialin/gatherconferenceid
+- count: 15
+  method: GET
+  uri: '/api/messages/:id'
+- count: 17
+  method: POST
+  uri: /api/files/getuploadurl
+- count: 20
+  method: POST
+  uri: /api/spacedialin/dialin
+- count: 20
+  method: GET
+  uri: '/api/topics/:topicid/messages/query'
+- count: 21
+  method: POST
+  uri: /api/topics/invite/
+- count: 26
+  method: POST
+  uri: /api/files/getdownloadurl
+- count: 42
+  method: POST
+  uri: '/api/topics/:topicid/invite'
+- count: 44
+  method: POST
+  uri: /auth/oauth/accesstokens/delete
+- count: 45
+  method: GET
+  uri: '/api/topics/invites/:id/join'
+- count: 52
+  method: GET
+  uri: /spaces/dashboard
+- count: 53
+  method: GET
+  uri: /api/users/me/topics?size=100
+- count: 61
+  method: GET
+  uri: '/spaces/:spaceid'
+- count: 66
+  method: GET
+  uri: /vendors/---
+- count: 72
+  method: GET
+  uri: '/api/topics/direct/user/:id'
+- count: 74
+  method: GET
+  uri: /.well-known/apple-app-site-association
+- count: 82
+  method: GET
+  uri: /api/users/me/tasks?size=10
+- count: 82
+  method: GET
+  uri: /api/users/me/ideas?size=10
+- count: 109
+  method: GET
+  uri: /api/users/me/topics?size=50&topictype=direct
+- count: 109
+  method: GET
+  uri: '/spaces/invites/:id/join'
+- count: 127
+  method: GET
+  uri: '/spaces/pictures/:id'
+- count: 141
+  method: GET
+  uri: /api/users/me/tasks?size=5
+- count: 144
+  method: GET
+  uri: /api/users/me/ideas?size=5
+- count: 146
+  method: GET
+  uri: /api/users/me/topics?size=50&topictype=group
+- count: 147
+  method: GET
+  uri: /api/users/me/topics?topicstatus=0&size=5
+- count: 157
+  method: POST
+  uri: /api/analytics/video/conference/start
+- count: 162
+  method: GET
+  uri: '/api/spaces/:spaceid/messages/byref'
+- count: 173
+  method: POST
+  uri: /api/analytics/video/conference/stop
+- count: 174
+  method: POST
+  uri: /auth/oauth/accesstokens/add
+- count: 180
+  method: POST
+  uri: /api/users/me/cm/subscriptions
+- count: 180
+  method: POST
+  uri: '/api/users/me/settings/:id'
+- count: 202
+  method: GET
+  uri: /api/confnumbers
+- count: 207
+  method: GET
+  uri: /assets/img/typing.gif
+- count: 210
+  method: POST
+  uri: /api/sync/users
+- count: 225
+  method: GET
+  uri: /api/users/me/topics?topictype=direct&topicstatus=0&size=20
+- count: 231
+  method: GET
+  uri: /api/users/me/topics?topictype=group&topicstatus=0&size=20
+- count: 250
+  method: GET
+  uri: /api/users/me/attachments/natives?size=10
+- count: 303
+  method: GET
+  uri: /api/users/me/settings
+- count: 311
+  method: GET
+  uri: '/api/topics/:topicid/tasks'
+- count: 313
+  method: GET
+  uri: '/api/topics/:topicid/ideas'
+- count: 404
+  method: GET
+  uri: /api/users/me
+- count: 450
+  method: GET
+  uri: '/api/topics/:topicid/messages/byref'
+- count: 477
+  method: GET
+  uri: '/api/topics/:topicid/join'
+- count: 550
+  method: GET
+  uri: '/api/users/me/colleagues/?search=:search'
+- count: 2554
+  method: GET
+  uri: /api/users/me/spaces
+- count: 15693
+  method: GET
+  uri: '/assets/js/zang-sw-config.js?tms=:tms'
+
+By HTTP Methods { GET: 23986, POST: 1307, DELETE: 22 }
+By HTTP Status { '200': 24980, '304': 298, '400': 17, '401': 6, '403': 6, '-': 8 }
+Slowest 20 Requests [ { timestamp: moment("2017-10-05T14:53:10.647"),
+    level: 'info',
+    message: '2017-10-05T18:53:10.647Z - info: MorganRequest=ea9403a6-9683-4d44-8262-fdcea29e6a5b 127.0.0.1 - - [Thu, 05 Oct 2017 18:53:10 GMT] Method=GET URL=/api/users/me  Status=200 3427.765 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: 'ea9403a6-9683-4d44-8262-fdcea29e6a5b',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 18:53:10 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3427.765,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T15:07:58.267"),
+    level: 'info',
+    message: '2017-10-05T19:07:58.266Z - info: MorganRequest=5f350037-cf6b-49a4-9d7b-460acb911017 127.0.0.1 - - [Thu, 05 Oct 2017 19:07:58 GMT] Method=GET URL=/api/users/me  Status=200 3505.655 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38]\n',
+    reqId: '5f350037-cf6b-49a4-9d7b-460acb911017',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 19:07:58 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3505.655,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38' },
+  { timestamp: moment("2017-10-05T13:04:50.555"),
+    level: 'info',
+    message: '2017-10-05T17:04:50.554Z - info: MorganRequest=497583df-3679-4c81-af94-a0ad74fc0188 127.0.0.1 - - [Thu, 05 Oct 2017 17:04:50 GMT] Method=GET URL=/api/users/me  Status=200 3520.450 ms - [Referer=https://spaces.zang.io/spaces/invites/59d22efe8e32eb0586093e43/join UserAgent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '497583df-3679-4c81-af94-a0ad74fc0188',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:04:50 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3520.45,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d22efe8e32eb0586093e43/join',
+    userAgent: 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T13:31:53.563"),
+    level: 'info',
+    message: '2017-10-05T17:31:53.562Z - info: MorganRequest=6ecf3ec8-9ae4-41be-bd39-33136682b2b0 127.0.0.1 - - [Thu, 05 Oct 2017 17:31:53 GMT] Method=GET URL=/api/users/me  Status=200 3557.176 ms - [Referer=https://spaces.zang.io/spaces/invites/59d66c468e32eb058609608f/join?inviteInfo=eyJzcGFjZU5hbWUiOiJDbG91ZCBTcGVjaWFsaXN0IiwiaW52aXRlck5hbWUiOiJTdGV2ZSBMb2VicmljaCIsImludml0ZXJFbWFpbCI6InNtbG9lYnJpY2hAYXZheWEuY29tIn0= UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36]\n',
+    reqId: '6ecf3ec8-9ae4-41be-bd39-33136682b2b0',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:31:53 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3557.176,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d66c468e32eb058609608f/join?inviteInfo=eyJzcGFjZU5hbWUiOiJDbG91ZCBTcGVjaWFsaXN0IiwiaW52aXRlck5hbWUiOiJTdGV2ZSBMb2VicmljaCIsImludml0ZXJFbWFpbCI6InNtbG9lYnJpY2hAYXZheWEuY29tIn0=',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36' },
+  { timestamp: moment("2017-10-05T10:59:25.582"),
+    level: 'info',
+    message: '2017-10-05T14:59:25.582Z - info: MorganRequest=93bc4bbf-68c6-4b3c-841d-82c0bffc371a 127.0.0.1 - - [Thu, 05 Oct 2017 14:59:25 GMT] Method=GET URL=/api/users/me  Status=200 3576.707 ms - [Referer=https://spaces.zang.io/spaces/invites/59d517808e32eb05860953d5/join UserAgent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '93bc4bbf-68c6-4b3c-841d-82c0bffc371a',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 14:59:25 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3576.707,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d517808e32eb05860953d5/join',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T12:01:30.015"),
+    level: 'info',
+    message: '2017-10-05T16:01:30.014Z - info: MorganRequest=243c9aa2-b1de-4e1a-9204-185a06283ef5 127.0.0.1 - - [Thu, 05 Oct 2017 16:01:30 GMT] Method=GET URL=/api/users/me  Status=200 3592.588 ms - [Referer=https://spaces.zang.io/spaces/invites/59d656c97e0aae05a5f7b4d6/join?inviteInfo=eyJzcGFjZU5hbWUiOiJaYW5nIE9mZmljZSIsImludml0ZXJOYW1lIjoiSnVsaWFuYSBIb3lvcyIsImludml0ZXJFbWFpbCI6Imp1bGlhbmFoQHphbmcuaW8ifQ== UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '243c9aa2-b1de-4e1a-9204-185a06283ef5',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 16:01:30 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3592.588,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d656c97e0aae05a5f7b4d6/join?inviteInfo=eyJzcGFjZU5hbWUiOiJaYW5nIE9mZmljZSIsImludml0ZXJOYW1lIjoiSnVsaWFuYSBIb3lvcyIsImludml0ZXJFbWFpbCI6Imp1bGlhbmFoQHphbmcuaW8ifQ==',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T19:45:58.555"),
+    level: 'info',
+    message: '2017-10-05T23:45:58.554Z - info: MorganRequest=61ed30d5-7ca8-40d5-b38f-048fda86d09f 127.0.0.1 - - [Thu, 05 Oct 2017 23:45:58 GMT] Method=GET URL=/api/users/me  Status=200 3725.604 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Linux; Android 7.0; LG-K371 Build/NRD90U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.98 Mobile Safari/537.36]\n',
+    reqId: '61ed30d5-7ca8-40d5-b38f-048fda86d09f',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 23:45:58 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3725.604,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Linux; Android 7.0; LG-K371 Build/NRD90U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.98 Mobile Safari/537.36' },
+  { timestamp: moment("2017-10-05T06:49:46.029"),
+    level: 'info',
+    message: '2017-10-05T10:49:46.029Z - info: MorganRequest=aedfd5c8-031d-4e12-9008-7553b8318d3f 127.0.0.1 - - [Thu, 05 Oct 2017 10:49:46 GMT] Method=GET URL=/api/users/me  Status=200 3881.306 ms - [Referer=- UserAgent=Zang%20Spaces/1.0.1760 CFNetwork/887 Darwin/17.0.0]\n',
+    reqId: 'aedfd5c8-031d-4e12-9008-7553b8318d3f',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 10:49:46 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 3881.306,
+    contentLength: NaN,
+    referer: '-',
+    userAgent: 'Zang%20Spaces/1.0.1760 CFNetwork/887 Darwin/17.0.0' },
+  { timestamp: moment("2017-10-05T13:42:06.134"),
+    level: 'info',
+    message: '2017-10-05T17:42:06.131Z - info: MorganRequest=b2af2941-a930-4c59-bc4f-938a7047c584 127.0.0.1 - - [Thu, 05 Oct 2017 17:42:06 GMT] Method=POST URL=/api/sync/users  Status=200 3966.627 ms 125 [Referer=- UserAgent=AppEngine-Google; (+http://code.google.com/appengine; appid: s~onesna2014)]\n',
+    reqId: 'b2af2941-a930-4c59-bc4f-938a7047c584',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:42:06 GMT',
+    method: 'POST',
+    uri: '/api/sync/users',
+    status: '200',
+    responseTime: 3966.627,
+    contentLength: 125,
+    referer: '-',
+    userAgent: 'AppEngine-Google; (+http://code.google.com/appengine; appid: s~onesna2014)' },
+  { timestamp: moment("2017-10-05T11:32:24.375"),
+    level: 'info',
+    message: '2017-10-05T15:32:24.374Z - info: MorganRequest=5c7a97a6-9549-415b-ae8b-75fe5bc0b026 127.0.0.1 - - [Thu, 05 Oct 2017 15:32:24 GMT] Method=GET URL=/api/users/me  Status=200 4306.176 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '5c7a97a6-9549-415b-ae8b-75fe5bc0b026',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 15:32:24 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 4306.176,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T14:08:04.823"),
+    level: 'info',
+    message: '2017-10-05T18:08:04.822Z - info: MorganRequest=e3dd185a-ff42-42d4-8651-330e7adfe534 127.0.0.1 - - [Thu, 05 Oct 2017 18:08:04 GMT] Method=GET URL=/api/users/me  Status=200 4435.902 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: 'e3dd185a-ff42-42d4-8651-330e7adfe534',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 18:08:04 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 4435.902,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T04:32:52.113"),
+    level: 'info',
+    message: '2017-10-05T08:32:52.113Z - info: MorganRequest=ab82b65c-6d66-469c-91da-9ed19403b75c 127.0.0.1 - - [Thu, 05 Oct 2017 08:32:52 GMT] Method=GET URL=/api/users/me  Status=200 4489.627 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: 'ab82b65c-6d66-469c-91da-9ed19403b75c',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 08:32:52 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 4489.627,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T10:56:12.516"),
+    level: 'info',
+    message: '2017-10-05T14:56:12.515Z - info: MorganRequest=cb48d835-4f62-46ff-a801-e34c07ec1074 127.0.0.1 - - [Thu, 05 Oct 2017 14:56:12 GMT] Method=GET URL=/api/users/me  Status=200 4495.332 ms - [Referer=https://spaces.zang.io/spaces/invites/59d6478f7e0aae05a5f7b3bf/join?inviteInfo=eyJzcGFjZU5hbWUiOiJHRU0gU291dGggRmxvcmlkYSIsImludml0ZXJOYW1lIjoiKFNhcmdlKSBKb2huIFN0b25lIiwiaW52aXRlckVtYWlsIjoic3RvbmVqbUBhdmF5YS5jb20ifQ== UserAgent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38]\n',
+    reqId: 'cb48d835-4f62-46ff-a801-e34c07ec1074',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 14:56:12 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 4495.332,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d6478f7e0aae05a5f7b3bf/join?inviteInfo=eyJzcGFjZU5hbWUiOiJHRU0gU291dGggRmxvcmlkYSIsImludml0ZXJOYW1lIjoiKFNhcmdlKSBKb2huIFN0b25lIiwiaW52aXRlckVtYWlsIjoic3RvbmVqbUBhdmF5YS5jb20ifQ==',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38' },
+  { timestamp: moment("2017-10-05T06:36:11.108"),
+    level: 'info',
+    message: '2017-10-05T10:36:11.108Z - info: MorganRequest=f91c0178-80f9-4694-92e5-a2c520822b1c 127.0.0.1 - - [Thu, 05 Oct 2017 10:36:11 GMT] Method=GET URL=/api/users/me  Status=200 4700.862 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: 'f91c0178-80f9-4694-92e5-a2c520822b1c',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 10:36:11 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 4700.862,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T13:03:46.476"),
+    level: 'info',
+    message: '2017-10-05T17:03:46.475Z - info: MorganRequest=04e73aab-0cf8-4855-bbb7-581aaf784dcf 127.0.0.1 - - [Thu, 05 Oct 2017 17:03:46 GMT] Method=GET URL=/api/users/me  Status=200 5206.515 ms - [Referer=https://spaces.zang.io/spaces/invites/59c19415d7ef0305b368324f/join UserAgent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '04e73aab-0cf8-4855-bbb7-581aaf784dcf',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:03:46 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 5206.515,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59c19415d7ef0305b368324f/join',
+    userAgent: 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T06:33:43.347"),
+    level: 'info',
+    message: '2017-10-05T10:33:43.347Z - info: MorganRequest=4d1fb394-8622-4c09-adc3-fbd5017d5eda 127.0.0.1 - - [Thu, 05 Oct 2017 10:33:43 GMT] Method=GET URL=/api/users/me  Status=200 5237.533 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '4d1fb394-8622-4c09-adc3-fbd5017d5eda',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 10:33:43 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 5237.533,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T14:46:38.750"),
+    level: 'info',
+    message: '2017-10-05T18:46:38.749Z - info: MorganRequest=cee1c6f4-f2b7-4fa5-a409-ecc65bfb6e9c 127.0.0.1 - - [Thu, 05 Oct 2017 18:46:38 GMT] Method=GET URL=/api/users/me  Status=200 5315.492 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: 'cee1c6f4-f2b7-4fa5-a409-ecc65bfb6e9c',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 18:46:38 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 5315.492,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T13:28:13.228"),
+    level: 'info',
+    message: '2017-10-05T17:28:13.227Z - info: MorganRequest=51cfc8b1-59e0-4b64-8b13-ae9e0dd81f91 127.0.0.1 - - [Thu, 05 Oct 2017 17:28:13 GMT] Method=GET URL=/api/users/me  Status=200 5569.961 ms - [Referer=https://spaces.zang.io/spaces/dashboard UserAgent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '51cfc8b1-59e0-4b64-8b13-ae9e0dd81f91',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:28:13 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 5569.961,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/dashboard',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' },
+  { timestamp: moment("2017-10-05T02:57:08.720"),
+    level: 'info',
+    message: '2017-10-05T06:57:08.720Z - info: MorganRequest=41e0eb1a-127a-4062-ae0c-aa5f4f859918 127.0.0.1 - - [Thu, 05 Oct 2017 06:57:08 GMT] Method=POST URL=/api/sync/users  Status=200 7487.164 ms 63 [Referer=- UserAgent=AppEngine-Google; (+http://code.google.com/appengine; appid: s~onesna2014)]\n',
+    reqId: '41e0eb1a-127a-4062-ae0c-aa5f4f859918',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 06:57:08 GMT',
+    method: 'POST',
+    uri: '/api/sync/users',
+    status: '200',
+    responseTime: 7487.164,
+    contentLength: 63,
+    referer: '-',
+    userAgent: 'AppEngine-Google; (+http://code.google.com/appengine; appid: s~onesna2014)' },
+  { timestamp: moment("2017-10-05T13:17:14.938"),
+    level: 'info',
+    message: '2017-10-05T17:17:14.937Z - info: MorganRequest=9f572237-d0c2-441c-aec6-c07691796133 127.0.0.1 - - [Thu, 05 Oct 2017 17:17:14 GMT] Method=GET URL=/api/users/me  Status=200 8206.151 ms - [Referer=https://spaces.zang.io/spaces/invites/59d668788e32eb0586096015/join?inviteInfo=eyJzcGFjZU5hbWUiOiJDb21iYXQgTmV0d29ya3MgKyBBdmF5YSIsImludml0ZXJOYW1lIjoiQW5kcmVzIFZlbmVnYXMiLCJpbnZpdGVyRW1haWwiOiJhbmRyZXN2QGVzbmEuY29tIn0= UserAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36]\n',
+    reqId: '9f572237-d0c2-441c-aec6-c07691796133',
+    remoteAddr: '127.0.0.1',
+    remoteUser: '-',
+    date: 'Thu, 05 Oct 2017 17:17:14 GMT',
+    method: 'GET',
+    uri: '/api/users/me',
+    status: '200',
+    responseTime: 8206.151,
+    contentLength: NaN,
+    referer: 'https://spaces.zang.io/spaces/invites/59d668788e32eb0586096015/join?inviteInfo=eyJzcGFjZU5hbWUiOiJDb21iYXQgTmV0d29ya3MgKyBBdmF5YSIsImludml0ZXJOYW1lIjoiQW5kcmVzIFZlbmVnYXMiLCJpbnZpdGVyRW1haWwiOiJhbmRyZXN2QGVzbmEuY29tIn0=',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' } ]
+[2017-10-10T14:26:42-04:00] [#10542] [INFO] [analysis.log] - <<< DONE
+tjia@tfeng-mac:~/Projects/tjia/Logan/load-test/logs$

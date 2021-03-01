@@ -1,0 +1,15 @@
+{
+  "name": "artillery-load",
+  "version": "1.0.0",
+  "description": "generate load with artillery containers",
+  "main": "run.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tiefeng Jia <jackj@esna.com>",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "exec-sh": "^0.2.1"
+  }
+}

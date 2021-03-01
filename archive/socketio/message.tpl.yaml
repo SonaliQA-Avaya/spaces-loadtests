@@ -1,0 +1,46 @@
+config:
+  target: {TEST_URL}
+  defaults:
+    Cookie: AUTH_TOKEN={JWTTOKEN}
+  socketio:
+    transports:
+      - websocket
+    reconnection: true
+    reconnectionDelay: 1000
+    query:
+      token: {JWTTOKEN}
+      tokenType: jwt
+      EIO: '3'
+      transport: websocket
+  phases:
+    - duration: 1800
+      arrivalRate: 2
+  variables:
+    topic: [{SPACE_IDS}]
+scenarios:
+  - engine: socketio
+    flow:
+      - emit:
+          channel: SUBSCRIBE_CHANNEL
+          namespace: "/chat"
+          data:
+            channel:
+              type: topic
+              _id: "{{ topic }}"
+      - think: "{{ $randomNumber(10,50) }}"
+      - loop:
+          - emit:
+              channel: SEND_MESSAGE
+              namespace: "/chat"
+              data:
+                content:
+                  bodyText: msg {{ $randomString() }}
+                  data: []
+                sender:
+                  _id: "{USER_ID}"
+                  type: user
+                category: chat
+                topicId: "{{ topic }}"
+          - think: "{{ $randomNumber(100,200) }}"
+        count: 2
+      - think: 1800

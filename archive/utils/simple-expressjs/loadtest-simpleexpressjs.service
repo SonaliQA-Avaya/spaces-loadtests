@@ -1,0 +1,20 @@
+[Unit]
+Description=LoadTest SimpleExpressJs
+
+[Service]
+
+ExecStart=/usr/local/bin/node /app/index.js
+WorkingDirectory=/app
+Restart=always
+RestartSec=2
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=loadtest-simpleexpressjs
+# Change to a non-root user (optional, but recommended)
+User=node
+Group=node
+# Set environment options
+Environment=NODE_ENV=production PORT=6666
+
+[Install]
+WantedBy=multi-user.target

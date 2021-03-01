@@ -1,0 +1,46 @@
+config:
+  target: https://spaces2apis-socket.zang.io
+  defaults:
+    Cookie: AUTH_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkX3NpZyI6IkFaZmVwekg5S0NTeHJWQTE3eGlZWFJRX3F1WFVWOWlDbGt4ZVJzZVZwOG8iLCJwcm9kdWN0X3R5cGUiOiJhY2NvdW50cyIsImxhc3R1cGRhdGV0aW1lIjoiMjAxNy0xMi0xMVQyMTozMTo0Mi44MTgiLCJpc3MiOiJ6YW5nLmlvIiwicHVibGlja2V5aWQiOiJhZ3h6Zm05dVpYTnVZVEl3TVRSeUdnc1NEVWRLZDNSUWRXSnNhV05MWlhrWWdJRGd6TXpBcXdnTSIsImV4cCI6MTUxOTgyNzcyMywidXNlcl9pZCI6ImFneHpmbTl1WlhOdVlUSXdNVFJ5RVFzU0JGVnpaWElZZ0lDZzJZbVJnZ3NNIiwidmVyIjoiMi4wIn0.LZLe2bP7mr40jq8XvqZilR2427bGX1j6WJzoj8_TKGeHOUKs6PJV7bbtuVpEC7BUDw2dckEsoHxe9VSK89fPLj3bLMmzEjzBXetfD4eAOpQ70GkOJPaAr6iXWwmIRI4mixXE_7RFkE_cQ8SQotB9lXntzdOUHAtlhr1uKeRVVp_oPx3hCc6N-3Bh5IMGh_bJ94SS6_B2X8_hDomQ33Le-zfOeMUO5fKzN_xpvl9PwzOrr4E2syzy29OytQHTLFklTb9p_zkWgQ-6KzUFkNUv74fv_Zd7g4kUfaUtN8I3MxMwYLYkqfKGsLu0MBmaZhNr1ymuTKlsk2aPB8htZMC7oA
+  socketio:
+    transports:
+      - websocket
+    reconnection: true
+    reconnectionDelay: 1000
+    query:
+      token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkX3NpZyI6IkFaZmVwekg5S0NTeHJWQTE3eGlZWFJRX3F1WFVWOWlDbGt4ZVJzZVZwOG8iLCJwcm9kdWN0X3R5cGUiOiJhY2NvdW50cyIsImxhc3R1cGRhdGV0aW1lIjoiMjAxNy0xMi0xMVQyMTozMTo0Mi44MTgiLCJpc3MiOiJ6YW5nLmlvIiwicHVibGlja2V5aWQiOiJhZ3h6Zm05dVpYTnVZVEl3TVRSeUdnc1NEVWRLZDNSUWRXSnNhV05MWlhrWWdJRGd6TXpBcXdnTSIsImV4cCI6MTUxOTgyNzcyMywidXNlcl9pZCI6ImFneHpmbTl1WlhOdVlUSXdNVFJ5RVFzU0JGVnpaWElZZ0lDZzJZbVJnZ3NNIiwidmVyIjoiMi4wIn0.LZLe2bP7mr40jq8XvqZilR2427bGX1j6WJzoj8_TKGeHOUKs6PJV7bbtuVpEC7BUDw2dckEsoHxe9VSK89fPLj3bLMmzEjzBXetfD4eAOpQ70GkOJPaAr6iXWwmIRI4mixXE_7RFkE_cQ8SQotB9lXntzdOUHAtlhr1uKeRVVp_oPx3hCc6N-3Bh5IMGh_bJ94SS6_B2X8_hDomQ33Le-zfOeMUO5fKzN_xpvl9PwzOrr4E2syzy29OytQHTLFklTb9p_zkWgQ-6KzUFkNUv74fv_Zd7g4kUfaUtN8I3MxMwYLYkqfKGsLu0MBmaZhNr1ymuTKlsk2aPB8htZMC7oA
+      tokenType: jwt
+      EIO: '3'
+      transport: websocket
+  phases:
+    - duration: 1800
+      arrivalRate: 2
+  variables:
+    topic: ["5a29e6dd660b9006215ed86a", "5a6f30a6c179a500076d80a7", "5a6f31866817640006cf3887", "5a6f3183c179a500076d80e7", "5a6f31816817640006cf387e", "5a6f317ec179a500076d80df", "5a6f317c6817640006cf3876", "5a6f3178c179a500076d80d6", "5a6f3176c179a500076d80ce", "5a6f31736817640006cf386d", "5a6f31716817640006cf3865", "5a6f316f6817640006cf385d", "5a6f316cc179a500076d80c5", "5a6f31686817640006cf3854", "5a6f315bc179a500076d80b5", "5a6f31546817640006cf384a", "5a6f30936817640006cf383a", "5a6f308cc179a500076d8097", "5a6f30856817640006cf382c", "5a6f307e6817640006cf3823", "5a6f3077c179a500076d8088"]
+scenarios:
+  - engine: socketio
+    flow:
+      - emit:
+          channel: SUBSCRIBE_CHANNEL
+          namespace: "/chat"
+          data:
+            channel:
+              type: topic
+              _id: "{{ topic }}"
+      - think: "{{ $randomNumber(10,50) }}"
+      - loop:
+          - emit:
+              channel: SEND_MESSAGE
+              namespace: "/chat"
+              data:
+                content:
+                  bodyText: msg {{ $randomString() }}
+                  data: []
+                sender:
+                  _id: "59ca95ab1d7b472de6741708"
+                  type: user
+                category: chat
+                topicId: "{{ topic }}"
+          - think: "{{ $randomNumber(100,200) }}"
+        count: 2
+      - think: 1800
