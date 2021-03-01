@@ -1,0 +1,64 @@
+
+version: '2'
+
+vars:
+  GCP_PROJECT: onesnastaging
+  CLUSTER: loadtest-k6
+  ZONE: us-central1-c
+  KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
+
+
+tasks:
+  kube-config:
+    cmds:
+      - gcloud container clusters get-credentials --zone {{ .ZONE }} {{ .CLUSTER }}
+
+  kube-context:
+    cmds:
+      - kubectl config use-context {{ .KUBE_CONTEXT }}
+
+  push-image:
+    desc: Build and push docker image with k6 script
+    deps: [kube-context]
+    # dir: '..'
+    cmds:
+      - docker build -t gcr.io/{{.GCP_PROJECT}}/k6-worker:latest .
+      - docker push gcr.io/{{.GCP_PROJECT}}/k6-worker:latest
+
+  stop:
+    cmds:
+      - helm ls | awk '/deployed/ { print $1 }' | xargs -tn1 helm delete
+
+  stop-2:
+    cmds:
+      - helm ls -n secondary | awk '/deployed/ { print $1 }' | xargs -tn1 helm delete -n secondary
+
+  stop-all:
+    deps: [kube-context]
+    cmds:
+      - task: stop
+      - task: stop-2
+
+  run:
+    deps: [stop-all]
+    dir: ./infra
+    cmds:
+      - helm upgrade --install -f ./k6/values.yaml k6-worker ./k6
+
+  run-large-meeting:
+    deps: [stop-all]
+    dir: ./infra
+    cmds:
+      - helm upgrade -n secondary --install -f ./k6/values-large-meeting-2.yaml k6-worker ./k6
+      - helm upgrade --install -f ./k6/values-large-meeting.yaml k6-worker ./k6
+
+  run-standalone:
+    deps: [stop-all]
+    dir: ./infra
+    cmds:
+      - helm upgrade --install -f ./k6/values-standalone.yaml k6-worker ./k6
+
+  debug-standalone:
+    dir: ./infra
+    cmds:
+      - helm template --debug -f ./k6/values-standalone.yaml k6-worker ./k6

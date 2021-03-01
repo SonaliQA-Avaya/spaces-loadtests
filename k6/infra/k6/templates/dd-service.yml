@@ -1,0 +1,16 @@
+{{- $agents_count := div .Values.replicaCount $.Values.datadog.pods_per_agent | add1  -}}
+{{range $i, $e := until ($agents_count|int) }}
+{{- $index := $i | add1 }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: datadog-agent-{{ $index }}
+spec:
+  selector:
+    app: datadog-agent-{{ $index }}
+  ports:
+    - protocol: UDP
+      port: 8125
+      targetPort: 8125
+---
+{{end}}

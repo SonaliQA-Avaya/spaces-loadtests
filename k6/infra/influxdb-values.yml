@@ -1,0 +1,11 @@
+
+resources:
+  requests:
+    cpu: 1.5
+    memory: 1500Mi
+
+# to change size for running pod
+# kubectl edit pvc $your_pvc 
+# and terminate pod after changes
+persistence:
+  size: 20Gi

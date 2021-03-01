@@ -1,0 +1,276 @@
+displayName: Load test
+mosaicLayout:
+  columns: 12
+  tiles:
+    - height: 4
+      widget:
+        title: 'Socketio client count for flavor-standalone [SUM]'
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_MEAN
+                  filter: >-
+                    metric.type="custom.googleapis.com/spaces/socketio_client_numbers"
+                    resource.label."cluster_name"="flavor-standalone"
+                    resource.label."container_name"="chat"
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      xPos: 6
+    - height: 4
+      widget:
+        title: Backend latency
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_MEAN
+                    perSeriesAligner: ALIGN_DELTA
+                  filter: >-
+                    metric.type="loadbalancing.googleapis.com/https/backend_latencies"
+                    resource.type="https_lb_rule"
+                    metric.label."response_code_class"="200"
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_PERCENTILE_95
+                    perSeriesAligner: ALIGN_DELTA
+                  filter: >-
+                    metric.type="loadbalancing.googleapis.com/https/backend_latencies"
+                    resource.type="https_lb_rule"
+                    metric.label."response_code_class"="200"
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      xPos: 6
+      yPos: 4
+    - height: 4
+      widget:
+        title: join rate
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/api_requests"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+                    metric.label."url"=monitoring.regex.full_match("/api/spaces/.*/join/")
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      xPos: 6
+      yPos: 8
+    - height: 4
+      widget:
+        title: anonymous and dashboard visits rate
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/api_requests"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+                    metric.label."url"="/api/anonymous/auth"
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/api_requests"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+                    metric.label."url"=monitoring.regex.full_match("/api/users/.*/statistics")
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      xPos: 6
+      yPos: 12
+    - height: 4
+      widget:
+        title: Chat Messages /m
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/chat_messages_count"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      yPos: 8
+    - height: 4
+      widget:
+        title: container_errors p/min
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: STACKED_AREA
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    groupByFields:
+                      - metric.label."container_name"
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/container_errors"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+            - minAlignmentPeriod: 60s
+              plotType: STACKED_AREA
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    groupByFields:
+                      - resource.label."container_name"
+                    perSeriesAligner: ALIGN_RATE
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/container_mongodb_errors"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+                  secondaryAggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    groupByFields:
+                      - resource.label."container_name"
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      xPos: 6
+      yPos: 16
+    - height: 4
+      widget:
+        title: container MongoDb errors p/min
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: LINE
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    perSeriesAligner: ALIGN_SUM
+                  filter: >-
+                    metric.type="logging.googleapis.com/user/logging/container_mongodb_errors"
+                    resource.type="k8s_container"
+                    resource.label."cluster_name"="flavor-standalone"
+                unitOverride: '1'
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      yPos: 12
+    - height: 4
+      widget:
+        title: Backend Request Count by Status
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: STACKED_AREA
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    groupByFields:
+                      - metric.label."response_code"
+                    perSeriesAligner: ALIGN_MEAN
+                  filter: >-
+                    metric.type="loadbalancing.googleapis.com/https/backend_request_count"
+                    resource.type="https_lb_rule"
+                    resource.label."url_map_name"="k8s2-um-2zbbcib7-default-spaces-standalone-04m0fgql"
+                  secondaryAggregation: {}
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6
+      yPos: 4
+    - height: 4
+      widget:
+        title: RPS
+        xyChart:
+          chartOptions:
+            mode: COLOR
+          dataSets:
+            - minAlignmentPeriod: 60s
+              plotType: STACKED_AREA
+              timeSeriesQuery:
+                timeSeriesFilter:
+                  aggregation:
+                    groupByFields:
+                      - resource.label."url_map_name"
+                    perSeriesAligner: ALIGN_RATE
+                  filter: >-
+                    metric.type="loadbalancing.googleapis.com/https/backend_request_count"
+                    resource.type="https_lb_rule"
+                    resource.label."url_map_name"="k8s2-um-2zbbcib7-default-spaces-standalone-04m0fgql"
+                  secondaryAggregation:
+                    crossSeriesReducer: REDUCE_SUM
+                    groupByFields:
+                      - resource.label."url_map_name"
+                    perSeriesAligner: ALIGN_MEAN
+          timeshiftDuration: 0s
+          yAxis:
+            label: y1Axis
+            scale: LINEAR
+      width: 6

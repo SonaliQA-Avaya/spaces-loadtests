@@ -1,0 +1,22 @@
+# Default values for k6-load-test.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+# replicaCount x VUS = [total number of VUS]
+replicaCount: 100
+
+loadTest:
+  vars:
+    CHAT_DURATION: 70 # in seconds
+    NEW_MESSAGE_INTERVAL: 40 # in seconds
+    ANONYMOUS_RATE: 0.20
+    DASHBOARD_VISIT_RATE: 0.15
+
+    VUS: 100  # per worker
+    HOLD_MINUTES: 60
+    VUS_PER_MINUTE: 1
+    SPACES_URL: https://spaces-standalone.esna.com
+    SPACES_API: "https://spaces-standaloneapis.esna.com/api"
+    CHAT_WS: "wss://spaces-standaloneapis-socket.esna.com"
+

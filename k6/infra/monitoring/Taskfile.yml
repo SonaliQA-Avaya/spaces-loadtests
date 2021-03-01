@@ -1,0 +1,17 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  EXPORT_PROJECT: prodigy-dev-1
+  IMPORT_PROJECT: onesnastaging
+
+tasks:
+  export:
+    cmds:
+      - deno run --allow-run --allow-write export.ts {{ .EXPORT_PROJECT }}
+    silent: true
+
+  import:
+    cmds:
+      - deno run --allow-run --allow-read --allow-write import.ts {{ .IMPORT_PROJECT }}
