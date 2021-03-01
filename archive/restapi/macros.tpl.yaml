@@ -1,0 +1,5 @@
+authorization: 'jwt {JWTTOKEN}'
+topicid: '{SPACE_ID}'
+userid: '{USER_ID}'
+settingid: '{SETTING_ID}'
+messageid: '{MESSAGE_ID}'

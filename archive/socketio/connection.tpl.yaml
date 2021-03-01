@@ -1,0 +1,25 @@
+config:
+  target: {TEST_URL}
+  defaults:
+    Cookie: AUTH_TOKEN={JWTTOKEN}
+  socketio:
+    transports:
+      - websocket
+    reconnection: true
+    reconnectionDelay: 1000
+    query:
+      token: {JWTTOKEN}
+      tokenType: jwt
+      EIO: '3'
+      forceNew: true
+      transport: websocket
+  phases:
+    - duration: 1800
+      arrivalRate: 5
+scenarios:
+  - engine: socketio
+    flow:
+      - emit:
+          channel: connection
+          namespace: "/chat"
+      - think: 1800
