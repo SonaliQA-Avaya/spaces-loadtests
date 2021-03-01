@@ -1,0 +1,94 @@
+{{- $agents_count := div .Values.replicaCount $.Values.datadog.pods_per_agent | add1  -}}
+{{range $i, $e := until ($agents_count|int) }}
+{{- $index := $i | add1 }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datadog-agent-{{ $index }}
+  labels: {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datadog-agent-{{ $index }}
+  template:
+    metadata:
+      labels:
+        app: datadog-agent-{{ $index }}
+      name: datadog-agent-{{ $index }}
+      annotations: {}
+    spec:
+      containers:
+      - image: datadog/agent:7.19.0
+        imagePullPolicy: Always
+        name: datadog-agent-{{ $index }}
+        ports:
+          - containerPort: 8125
+            name: dogstatsdport
+            protocol: UDP
+        env:
+        - name: DD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: datadog-secret
+              key: DD_API_KEY
+        - name: DD_KUBERNETES_KUBELET_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: KUBERNETES
+          value: "true"
+        - name: DD_COLLECT_KUBERNETES_EVENTS
+          value: "false"
+        - name: DD_LOG_LEVEL
+          value: "INFO"
+        - name: DD_DOGSTATSD_PORT
+          value: "8125"
+        - name: DD_APM_ENABLED
+          value: "false"
+        - name: DD_LOGS_ENABLED
+          value: "false"
+        - name: DD_PROCESS_AGENT_ENABLED
+          value: "false"
+        - name: DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL
+          value: "false"
+        - name: DD_LOGS_CONFIG_K8S_CONTAINER_USE_FILE
+          value: "true"
+        - name: DD_HEALTH_PORT
+          value: "5555"
+        - name: DD_DOGSTATSD_NON_LOCAL_TRAFFIC
+          value: "true"
+        volumeMounts:
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+          - name: procdir
+            mountPath: /host/proc
+            readOnly: true
+          - name: cgroups
+            mountPath: /host/sys/fs/cgroup
+            readOnly: true
+
+        livenessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /health
+            port: 5555
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 550m # e2-medium nodes cannot allocate more
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: dockersocket
+        - hostPath:
+            path: /proc
+          name: procdir
+        - hostPath:
+            path: /sys/fs/cgroup
+          name: cgroups
+---
+{{end}}

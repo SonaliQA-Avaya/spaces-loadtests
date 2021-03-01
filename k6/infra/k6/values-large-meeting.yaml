@@ -1,0 +1,32 @@
+# replicaCount x VUS = [total number of VUS]
+replicaCount: 1
+
+loadTest:
+  vars:
+    VUS: 100  # per worker
+    HOLD_MINUTES: 60
+    VUS_PER_MINUTE: 30
+
+    # drop constantly
+    CHAT_DURATION: 20 # in seconds
+    SKIP_JOIN_MESSAGE: 1 # no message after joining
+    NEW_MESSAGE_INTERVAL: 15 # in seconds
+    NEW_MESSAGE_CHANCE: 0.05 # % chance of sending a message
+    SKIP_JOIN_API_CALLS: 1
+    ENABLE_MPAAS: 1
+
+    ANONYMOUS_RATE: 0.10
+    DASHBOARD_VISIT_RATE: 0.01
+
+    DATA_FILE_START_INDEX: 1000
+
+    # JOIN_TOPIC_ID: 5fca9bf4a507404a1865ff1c # https://loganstaging2.esna.com/spaces/5fca9bf4a507404a1865ff1c
+    # SPACES_URL: https://loganstaging2.esna.com
+    # SPACES_API: "https://loganstaging2apis.esna.com/api"
+    # CHAT_WS: "wss://loganstaging2apis-socket.esna.com"
+
+    JOIN_TOPIC_ID: 5fd23dcb698b03fafe5897d1 # https://loganstaging2020.esna.com/spaces/5fd23dcb698b03fafe5897d1
+    SPACES_URL: https://loganstaging2020.esna.com
+    SPACES_API: "https://loganstaging2020apis.esna.com/api"
+    CHAT_WS: "wss://loganstaging2020apis-socket.esna.com"
+

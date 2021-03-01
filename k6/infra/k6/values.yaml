@@ -1,0 +1,47 @@
+# Default values for k6-load-test.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+# replicaCount x VUS = [total number of VUS]
+replicaCount: 30
+
+loadTest:
+  vars:
+    CHAT_DURATION: 70 # in seconds
+    NEW_MESSAGE_INTERVAL: 40 # in seconds
+    ANONYMOUS_RATE: 0.20
+    DASHBOARD_VISIT_RATE: 0.15
+
+    VUS: 100  # per worker
+    HOLD_MINUTES: 120
+    VUS_PER_MINUTE: 1
+    SPACES_URL: https://loganstaging2020.esna.com
+    SPACES_API: "https://loganstaging2020apis.esna.com/api"
+    CHAT_WS: "wss://loganstaging2020apis-socket.esna.com"
+
+
+datadog:
+  DD_API_KEY: 411f6c91025bbdcba65fb3721d5ce4a4
+  pods_per_agent: 30
+
+image:
+  repository: gcr.io/onesnastaging/k6-worker
+  pullPolicy: Always
+  tag: latest
+
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 0.5
+    memory: 700Mi
+  limits:
+    cpu: 1
+    memory: 1000Mi

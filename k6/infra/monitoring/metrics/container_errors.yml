@@ -1,0 +1,28 @@
+createTime: '2021-01-26T18:11:37.415580896Z'
+filter: |-
+  resource.type="k8s_container"
+  labels."k8s-pod/app"="spaces"
+
+  (textPayload: "error" OR textPayload: "exception")
+
+  NOT textPayload:"Error: invalid json, empty body"
+  NOT textPayload:"DeprecationWarning"
+
+  NOT textPayload:"reading feature no result found"
+  NOT textPayload:"error reading sys-configuration"
+  NOT textPayload:"When use uws happen error, use old websocket engine"
+
+  NOT textPayload:"[OsUtilsGke] [init] Error: HTTP Error 403 on API call"
+  NOT textPayload:"[OsUtilsGke] [_kubernetes] HTTP Error 403"
+labelExtractors:
+  container_name: EXTRACT(resource.labels.container_name)
+metricDescriptor:
+  labels:
+  - key: container_name
+  metricKind: DELTA
+  name: projects/prodigy-dev-1/metricDescriptors/logging.googleapis.com/user/logging/container_errors
+  type: logging.googleapis.com/user/logging/container_errors
+  unit: '1'
+  valueType: INT64
+name: logging/container_errors
+updateTime: '2021-02-02T19:38:13.723882340Z'

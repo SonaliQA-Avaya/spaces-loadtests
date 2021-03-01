@@ -1,0 +1,32 @@
+createTime: '2021-01-26T18:11:34.099957220Z'
+description: Api requests count
+filter: |-
+  resource.type=k8s_container
+  textPayload:MorganRequest
+  textPayload:/api/
+
+  (textPayload:"/join/" OR textPayload:"/anonymous/" OR textPayload:"/statistics" )
+
+  NOT textPayload:taskqueue/runner
+  NOT textPayload:"Method=OPTIONS"
+labelExtractors:
+  duration: REGEXP_EXTRACT(textPayload, "Status=\\d{3}\\s(\\d+\\.\\d+)\\sms")
+  method: REGEXP_EXTRACT(textPayload, "Method=(\\w+)")
+  url: REGEXP_EXTRACT(textPayload, "URL=([^\\s]+)")
+  url_end: REGEXP_EXTRACT(textPayload, "URL=[^\\s]+(\\/[^\\s]+)")
+metricDescriptor:
+  description: Api requests count
+  labels:
+  - key: url
+  - key: duration
+    valueType: INT64
+  - key: method
+  - description: last part in url, normally excludes id
+    key: url_end
+  metricKind: DELTA
+  name: projects/prodigy-dev-1/metricDescriptors/logging.googleapis.com/user/logging/api_requests
+  type: logging.googleapis.com/user/logging/api_requests
+  unit: '1'
+  valueType: INT64
+name: logging/api_requests
+updateTime: '2021-02-02T19:38:13.729768936Z'

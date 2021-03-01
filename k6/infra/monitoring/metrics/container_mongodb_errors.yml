@@ -1,0 +1,14 @@
+createTime: '2021-01-26T18:11:38.997832281Z'
+filter: |-
+  resource.type="k8s_container"
+
+  (textPayload:error OR textPayload:exception)
+  textPayload:mongo
+metricDescriptor:
+  metricKind: DELTA
+  name: projects/prodigy-dev-1/metricDescriptors/logging.googleapis.com/user/logging/container_mongodb_errors
+  type: logging.googleapis.com/user/logging/container_mongodb_errors
+  unit: '1'
+  valueType: INT64
+name: logging/container_mongodb_errors
+updateTime: '2021-02-02T19:38:13.723545467Z'
