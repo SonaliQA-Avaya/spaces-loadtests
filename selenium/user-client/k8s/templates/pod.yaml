@@ -1,0 +1,35 @@
+{{range $i, $e := until (.Values.users|int) }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $.Chart.Name }}{{ $i }}
+  labels:
+    app: {{ $.Chart.Name }}-{{ $i }}
+spec:
+  containers:
+    - name: {{ $.Chart.Name }}{{ $i }}
+      image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+      imagePullPolicy: {{ $.Values.image.pullPolicy }}
+      env:
+        - name: "env"
+          value: "k8s"
+        - name: "POD_INDEX"
+          value: {{ $i | quote }}
+        - name: "browserId"
+          value: {{$i | quote}}
+        - name: "controlServerIP"
+          value: {{$.Values.controlServerIP | quote}}
+        - name: "storageKeyPath"
+          value: /tmp/secret/storage-key.json
+      volumeMounts:
+        - name: "storage-key"
+          mountPath: "/tmp/secret"
+      resources:
+        {{- toYaml $.Values.resources | nindent 8 }}
+  volumes:
+    - name: "storage-key"
+      secret: 
+        secretName: "storage-key"
+  restartPolicy: Never
+---
+{{end}}

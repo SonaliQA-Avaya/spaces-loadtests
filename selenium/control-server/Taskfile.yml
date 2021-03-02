@@ -1,0 +1,14 @@
+
+version: '2'
+
+vars:
+  GCP_PROJECT: spaces-dev-practice1
+
+tasks:
+  build-image:
+    deps: []
+    dir: ./
+    cmds:
+      - sudo docker build -t testing-control-server .
+      - sudo docker tag testing-control-server gcr.io/{{ .GCP_PROJECT }}/testing-control-server
+      - sudo docker push gcr.io/{{ .GCP_PROJECT }}/testing-control-server
