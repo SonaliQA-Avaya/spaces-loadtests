@@ -1,0 +1,38 @@
+
+version: '2'
+
+vars:
+  GCP_PROJECT: spaces-dev-practice1
+  CLUSTER: fake-user-cluster
+  KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
+
+tasks:
+  clean:
+    deps: []
+    dir: ./
+    cmds: 
+      - kubectl delete pods $(kubectl get pods | grep "fakeuser" | awk 'BEGIN { ORS=" "}; {print $1}')
+
+  build-image:
+    deps: []
+    dir: ../
+    cmds:
+      - sudo docker build -t testing-client .
+      - sudo docker tag testing-client gcr.io/{{ .GCP_PROJECT }}/testing-client
+      - sudo docker push gcr.io/{{ .GCP_PROJECT }}/testing-client
+
+  run-large-meeting-test:
+    deps: []
+    dir: ./
+    cmds:
+      - helm upgrade --install -f ./values.yaml fakeuser ./
+
+  create-storage-secret:
+    deps: []
+    dir: ./
+    cmds:
+      - kubectl create secret generic storage-key --from-file ../keys/storage-key.json
+
+  
+    
+  

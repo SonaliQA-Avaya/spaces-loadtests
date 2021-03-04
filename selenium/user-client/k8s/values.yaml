@@ -1,0 +1,22 @@
+users: 300
+controlServerIP: 	104.155.171.110
+
+image:
+  repository: gcr.io/spaces-dev-practice1/testing-client
+  pullPolicy: Always
+  tag: latest
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 1.5
+    memory: 700Mi
+  limits:
+    cpu: 2
+    memory: 1000Mi
