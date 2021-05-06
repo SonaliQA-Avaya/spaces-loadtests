@@ -5,7 +5,11 @@ export const metrics = [
   "logging/container_mongodb_errors",
 ];
 
-export const exportDashOptions = {
+type DashOptions = {
+  [key: string]: string
+}
+
+export const exportDashOptions: DashOptions = {
   cluster: "flavor-standalone",
   urlMap: "k8s2-um-2zbbcib7-default-spaces-standalone-04m0fgql",
 };
@@ -13,6 +17,7 @@ export const exportDashOptions = {
 export const importDashOptions = {
   cluster: "loganstaging-2020-default",
   urlMap: "loganstaging2020-lb",
+export const importDashOptions: DashOptions = {
 };
 
 // export const importDashOptions = {

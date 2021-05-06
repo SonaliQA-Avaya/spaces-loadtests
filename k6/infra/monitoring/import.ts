@@ -30,16 +30,16 @@ type Dashboard = {
 };
 
 async function importDashboard() {
-  let dashText = await Deno.readTextFile("./dashboard.yml");
+  let dashText = (await Deno.readTextFile("./dashboard.yml")).toString()
 
-  dashText = dashText.replace(
-    exportDashOptions.cluster,
-    importDashOptions.cluster,
-  );
-  dashText = dashText.replace(
-    exportDashOptions.urlMap,
-    importDashOptions.urlMap,
-  );
+  const keys = ["cluster", "urlMap"]
+  keys.forEach((key: string) => {
+    const oldVal = exportDashOptions[key]
+    const newVal = importDashOptions[key]
+    // console.log(`replacing [${key}]`, {oldVal, newVal});
+    dashText = dashText.replaceAll(oldVal,newVal) 
+  })
+   
   const data = parseYaml(dashText) as Dashboard;
   data.displayName = `Load test - ${importDashOptions.cluster}`;
 
@@ -47,7 +47,7 @@ async function importDashboard() {
   // const tmp = ".";
   const tmpFile = `${tmp}/dash.json`;
   await Deno.writeTextFile(tmpFile, JSON.stringify(data));
-  console.log(tmp);
+  console.log(tmp); 
 
   const command =
     `gcloud monitoring dashboards create --project=${project} --config-from-file=${tmpFile}`;
