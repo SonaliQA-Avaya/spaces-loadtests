@@ -40,6 +40,7 @@ tasks:
       - task: stop-2
 
   run:
+    desc: regular load test, stress tests system for lots of users joining meetings
     deps: [stop-all]
     dir: ./infra
     cmds:
@@ -62,3 +63,10 @@ tasks:
     dir: ./infra
     cmds:
       - helm template --debug -f ./k6/values-standalone.yaml k6-worker ./k6
+
+  run-sockets:
+    desc: sockets heavy load test, simulates lot's of sleeping sockets with little activity after establishing WS
+    deps: [stop-all]
+    dir: ./infra
+    cmds:
+      - helm upgrade --install -f ./k6/values-sockets.yaml k6-worker ./k6

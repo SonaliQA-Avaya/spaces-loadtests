@@ -60,7 +60,7 @@ export function chat({ token, topicId }) {
 
   // console.log(JSON.stringify({ user }))
 
-  const url = `${CHAT_WS}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket`;
+  const url = `${CHAT_WS}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
 
   var response = ws.connect(url, {}, function (socket) {
     let subscribeTime;
