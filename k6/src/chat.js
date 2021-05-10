@@ -1,6 +1,6 @@
 import ws from "k6/ws";
 import http from "k6/http";
-import { check } from "k6";
+import { check, sleep } from "k6";
 import {
   errorRate,
   wsErrorRate,
@@ -33,37 +33,13 @@ const debug = (msg) => {
   }
 };
 
-export function chat({ token, topicId }) {
+
+function chatConnection({token, user, topicId, timeout}) {
   const { CHAT_WS, SPACES_API } = __ENV;
-
-  let checkRes;
-  let meResp = http.get(`${SPACES_API}/users/me`, {
-    headers: {
-      accept: "application/json",
-      authorization: `jwt ${token}`,
-      "content-type": "application/json",
-    },
-  });
-  checkRes = check(meResp, { "status is 200": (r) => r && r.status === 200 });
-  errorRate.add(!checkRes);
-
-  const me = meResp.json();
-
-  const user = {
-    _id: me._id,
-    type: me.aType,
-    username: me.username,
-    displayname: me.displayname,
-    picture_url: me.picture_url,
-    phone_numbers: [],
-  };
-
-  // console.log(JSON.stringify({ user }))
-
   const url = `${CHAT_WS}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
+  let checkRes;
   let wsOpenTs;
-
-  var response = ws.connect(url, {}, function (socket) {
+  const response = ws.connect(url, {}, function (socket) {
     let subscribeTime;
     socket.on("open", function open() {
       wsOpenTs = Date.now();
@@ -220,6 +196,7 @@ export function chat({ token, topicId }) {
         );
         debug(`-->SUBSCRIBE_CHANNEL`);
       }
+;
 
       if (msg && msg.startsWith("42/chat,")) {
         const data = JSON.parse(msg.substring("42/chat,".length));
@@ -273,8 +250,12 @@ export function chat({ token, topicId }) {
       // console.log("disconnected");
       debug('WS close');
       const wsCloseTs = Date.now();
-      const conTimeSec = (wsCloseTs - wsOpenTs)/1000;
-      console.log(`vu: ${__VU}: WS closed, was open for ${conTimeSec} sec`);
+      const conTime = (wsCloseTs - wsOpenTs);
+      console.log(`vu: ${__VU}: WS closed, was open for ${conTime/1000} sec`);
+      if (conTime < timeout) {
+        console.log(`vu: ${__VU}: connection dropped, reconnecting for ${(timeout - conTime)/1000}s`)
+        chatConnection({token, user, topicId, timeout: timeout - conTime});
+      }
     });
 
     socket.on("error", function (e) {
@@ -301,11 +282,46 @@ export function chat({ token, topicId }) {
       leaveChannel();
 
       socket.close();
-    }, 1000 * CHAT_DURATION);
+    }, timeout);
   });
 
   checkRes = check(response, {
     "chat status is 101": (r) => r && r.status === 101,
   });
   wsErrorRate.add(!checkRes);
+}
+
+export function chat({ token, topicId }) {
+  const { SPACES_API } = __ENV;
+
+  let checkRes;
+  let meResp = http.get(`${SPACES_API}/users/me`, {
+    headers: {
+      accept: "application/json",
+      authorization: `jwt ${token}`,
+      "content-type": "application/json",
+    },
+  });
+  checkRes = check(meResp, { "status is 200": (r) => r && r.status === 200 });
+  errorRate.add(!checkRes);
+
+  const me = meResp.json();
+
+  const user = {
+    _id: me._id,
+    type: me.aType,
+    username: me.username,
+    displayname: me.displayname,
+    picture_url: me.picture_url,
+    phone_numbers: [],
+  };
+
+  // console.log(JSON.stringify({ user }))
+
+  const timeout = 1000 * CHAT_DURATION;
+  try {
+    chatConnection({token, user, timeout, topicId})
+  } catch(e) {
+    console.error(e);
+  }
 }

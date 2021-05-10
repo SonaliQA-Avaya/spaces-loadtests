@@ -30,7 +30,7 @@ tasks:
     cmds:
       - |
         k6 run -u 1 src/chat.js -e CHAT_WS={{.CHAT_WS}} -e SPACES_API={{.SPACES_API}} -e DEBUG=1 \
-          -e CHAT_DURATION=3600
+          -e CHAT_DURATION=36
 
   mpaas-test:
     cmds:
@@ -48,7 +48,10 @@ tasks:
         k6 run src/spaces.test.js -e VUS=1 \
           -e SPACES_API={{.SPACES_API}} \
           -e CHAT_WS={{.CHAT_WS}} -e SPACES_URL={{ .SPACES_URL }} \
-          -e CHAT_DURATION=3600 -e DEBUG=1
+          -e CHAT_DURATION=3600 -e DEBUG=1 \
+          -e NEW_MESSAGE_INTERVAL=300 -e SKIP_JOIN_MESSAGE=1 -e NEW_MESSAGE_CHANCE=0.10 \
+          -e HOLD_MINUTES=120
+
 
   large-meeting-test:
     cmds:

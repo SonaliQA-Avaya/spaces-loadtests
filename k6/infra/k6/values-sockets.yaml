@@ -1,11 +1,11 @@
 # this is a socket heavy config
 
 # replicaCount x VUS = [total number of VUS]
-replicaCount: 80
+replicaCount: 12
 
 loadTest:
   vars:
-    CHAT_DURATION: 1800 # 30 min
+    CHAT_DURATION: 3600 # 60 min
     NEW_MESSAGE_INTERVAL: 300 # 5 min
     SKIP_JOIN_MESSAGE: 1 # no message after joining
     NEW_MESSAGE_CHANCE: 0.10 # 10%
@@ -14,7 +14,7 @@ loadTest:
 
     VUS: 100  # per worker
     HOLD_MINUTES: 120
-    VUS_PER_MINUTE: 2
+    VUS_PER_MINUTE: 6
     # SPACES_URL: https://loganstaging2020.esna.com
     # SPACES_API: "https://loganstaging2020apis.esna.com/api"
     # CHAT_WS: "wss://loganstaging2020apis-socket.esna.com"
