@@ -138,14 +138,14 @@ function run() {
   }
 
   if (isGuest) {
-    console.log(`${username} will join as Anonymous`);
+    console.log(`vu=${__VU}: ${username} will join as Anonymous`);
     token = loginAnonymous(`Guest ${username}`).token;
   }
   // console.log(`VU=${__VU}, iter=${__ITER}, isOrganizer=${isOrganizer}, token=${token}`);
 
   if (!token) {
     sleep(1);
-    console.error(`no token for ${usernmae}`);
+    console.error(`vu=${__VU}: no token for ${usernmae}`);
     return;
   }
 

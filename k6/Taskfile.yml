@@ -3,9 +3,9 @@
 version: '2'
 
 vars:
-  SPACES_URL: https://loganstaging2020.esna.com
-  SPACES_API: https://loganstaging2020apis.esna.com/api
-  CHAT_WS: wss://loganstaging2020apis-socket.esna.com
+  SPACES_URL: https://loganstaging2.esna.com
+  SPACES_API: https://loganstaging2apis.esna.com/api
+  CHAT_WS: wss://loganstaging2apis-socket.esna.com
 
   # SPACES_URL: https://loganstaging2.esna.com
   # SPACES_API: "https://loganstaging2apis.esna.com/api"
@@ -28,7 +28,9 @@ tasks:
 
   chat-test:
     cmds:
-      - k6 run -u 1 -d 10s src/chat.js -e CHAT_WS={{.CHAT_WS}} -e SPACES_API={{.SPACES_API}} -e DEBUG=1
+      - |
+        k6 run -u 1 src/chat.js -e CHAT_WS={{.CHAT_WS}} -e SPACES_API={{.SPACES_API}} -e DEBUG=1 \
+          -e CHAT_DURATION=3600
 
   mpaas-test:
     cmds:
@@ -43,10 +45,10 @@ tasks:
   quick-run:
     cmds:
       - |
-        k6 run -u 10 -d 10s src/spaces.test.js \
+        k6 run src/spaces.test.js -e VUS=1 \
           -e SPACES_API={{.SPACES_API}} \
           -e CHAT_WS={{.CHAT_WS}} -e SPACES_URL={{ .SPACES_URL }} \
-          -e ANONYMOUS_RATE=0.55
+          -e CHAT_DURATION=3600 -e DEBUG=1
 
   large-meeting-test:
     cmds:

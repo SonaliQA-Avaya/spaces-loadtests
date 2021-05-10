@@ -61,12 +61,16 @@ export function chat({ token, topicId }) {
   // console.log(JSON.stringify({ user }))
 
   const url = `${CHAT_WS}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
+  let wsOpenTs;
 
   var response = ws.connect(url, {}, function (socket) {
     let subscribeTime;
     socket.on("open", function open() {
+      wsOpenTs = Date.now();
+      debug('WS open');
       socket.setInterval(function timeout() {
         socket.ping();
+        socket.send('2'); // socket.io ping or something similar
         debug(`${__VU}: ping`);
       }, 1000 * 10);
     });
@@ -267,6 +271,10 @@ export function chat({ token, topicId }) {
 
     socket.on("close", function close() {
       // console.log("disconnected");
+      debug('WS close');
+      const wsCloseTs = Date.now();
+      const conTimeSec = (wsCloseTs - wsOpenTs)/1000;
+      console.log(`vu: ${__VU}: WS closed, was open for ${conTimeSec} sec`);
     });
 
     socket.on("error", function (e) {
@@ -289,6 +297,7 @@ export function chat({ token, topicId }) {
     });
 
     socket.setTimeout(function () {
+      console.log(`vu: ${__VU}, username: ${user.username} WS connection timeout, closing`);
       leaveChannel();
 
       socket.close();

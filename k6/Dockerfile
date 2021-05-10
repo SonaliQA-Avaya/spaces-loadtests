@@ -1,4 +1,4 @@
-FROM loadimpact/k6
+FROM loadimpact/k6:0.27.0
 
 WORKDIR /app
 
