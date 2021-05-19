@@ -8,7 +8,8 @@
     "mongodb": "^3.6.3",
     "selenium-webdriver": "^4.0.0-alpha.8",
     "socket.io-client": "^3.1.0",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.4.7",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start:dev": "browserId=132322 controlServerIP=0.0.0.0:80 storageKeyPath=./keys/storage-key.json node index.js",

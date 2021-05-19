@@ -13,13 +13,19 @@ tasks:
     cmds: 
       - kubectl delete pods $(kubectl get pods | grep "fakeuser" | awk 'BEGIN { ORS=" "}; {print $1}')
 
+  clean-few:
+    deps: []
+    dir: ./
+    cmds: 
+      - kubectl delete pods $(kubectl get pods | grep "fakeuser" | head -n 300 | awk 'BEGIN { ORS=" "}; {print $1}')
+
   build-image:
     deps: []
     dir: ../
     cmds:
-      - sudo docker build -t testing-client .
-      - sudo docker tag testing-client gcr.io/{{ .GCP_PROJECT }}/testing-client
-      - sudo docker push gcr.io/{{ .GCP_PROJECT }}/testing-client
+      - docker build -t testing-client .
+      - docker tag testing-client gcr.io/{{ .GCP_PROJECT }}/testing-client
+      - docker push gcr.io/{{ .GCP_PROJECT }}/testing-client
 
   run-large-meeting-test:
     deps: []

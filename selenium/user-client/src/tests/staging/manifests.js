@@ -4,6 +4,7 @@ module.exports = {
     ],
     "regular" : [
         "basic",
-        "basicMessage"
+        "basicMessage",
+        "goToDashboard"
     ]
 }

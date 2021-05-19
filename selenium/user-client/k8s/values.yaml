@@ -1,5 +1,5 @@
-users: 300
-controlServerIP: 	104.155.171.110
+users: 1500
+controlServerIP: 	34.71.237.67
 
 image:
   repository: gcr.io/spaces-dev-practice1/testing-client
@@ -19,4 +19,4 @@ resources:
     memory: 700Mi
   limits:
     cpu: 2
-    memory: 1000Mi
+    memory: 2000Mi

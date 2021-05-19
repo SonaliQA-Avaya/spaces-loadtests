@@ -119,7 +119,7 @@ class BasicMessage extends EventEmitter{
     }
     async isOnAccounts(){
         const url = await this.driver.getCurrentUrl()
-        const accounts = "onesnatesting.esna.com/"
+        const accounts = "onesnastaging.esna.com/"
         return url.indexOf(accounts) != -1
     }
     async isGuestJoin(){
