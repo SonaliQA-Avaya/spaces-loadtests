@@ -183,6 +183,9 @@ class UserManager extends EventEmitter{
             this.users[userInfo.browserId].sendMessage()
         })
     }
+    launchMessageFloodCount(count){
+        
+    }
 
     forceAllToExit(){
         let allUsers = this.getUsers()
@@ -199,6 +202,34 @@ class UserManager extends EventEmitter{
         return {
             stopCount : availableUsers.length
         }
+    }
+
+    requestLogs(browserIds=[]){
+        for(let browserId of browserIds){
+            if(this.users[browserId] && this.users[browserId].state == "locked"){
+                this.users[browserId].sendRequestLog() 
+            }
+        }
+    }
+
+    requestScreenshots(browserIds=[]){
+        for(let browserId of browserIds){
+            if(this.users[browserId] && this.users[browserId].state == "locked"){
+                this.users[browserId].sendRequestScreenshot() 
+            }
+        }
+    }
+    getActiveUsers(){
+        let users = Object.values(this.users).filter(user=>{
+            return user.state === "locked"
+        }).map(user=>{
+            return {
+                browserId : user.id,
+                testType : user.testType,
+                userCredentials : {...user.userCredentials}
+            }
+        })
+        return users
     }
 }
 
