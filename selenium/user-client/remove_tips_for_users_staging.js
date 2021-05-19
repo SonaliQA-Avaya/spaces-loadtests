@@ -11,10 +11,11 @@ const delay = (ms)=>{
 		setTimeout(resolve,ms)
 	})
 }
-// let users = [['user256@ericloadtest.com']] 
-const connectionString = ""
+let usersWithNoSettingsObj = [];
+
+// let users = [['user256@ericloadtest.com']]
 MongoClient.connect(
-  connectionString,
+  '',
   { useNewUrlParser: true, useUnifiedTopology: true },
   async (connectErr, client) => {
 	let findOne = (filter)=>{
@@ -46,16 +47,24 @@ MongoClient.connect(
 		showFeatureTipsOnStartUp : false
 	}
 	for(let index = 0; index < users.length; index++){
-		if(index > 1000) break
+		if(index > 1200) break
 		let user = users[index]
 		let filter = { 'username' : user[0]}
 		let [usj1] = await findOne(filter)
-		console.log(usj1.showFeatureTipsOnStartUp)
-		let updateResponse = await findOneAndUpdate(filter)
-		let [usj2] = await findOne(filter)
-		console.log(usj2.showFeatureTipsOnStartUp)
-		await delay(300)
+		if(!usj1){
+			console.log("no user settings obj",user[0])
+			usersWithNoSettingsObj.push(`${user[0]},${user[1]}`)
+		}else{
+			console.log(usj1.showFeatureTipsOnStartUp)
+			let updateResponse = await findOneAndUpdate(filter)
+			let [usj2] = await findOne(filter)
+			console.log(usj2.showFeatureTipsOnStartUp)
+			await delay(500)
+		}
+
 	}
+	console.log(usersWithNoSettingsObj)
+	fs.writeFileSync("./staging_users_no_settings.csv",usersWithNoSettingsObj.join("\n"))
 	client.close()
 });
 

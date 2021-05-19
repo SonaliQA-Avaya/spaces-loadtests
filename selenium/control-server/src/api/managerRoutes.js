@@ -28,6 +28,13 @@ class ManagerRoutes {
                 testing : testingUsers
             })
         })
+        this.routes.get('/activeusersummary',(req,res)=>{
+            let users = this.userManager.getActiveUsers()
+            res.json({
+                success : true,
+                users : users
+            })
+        })
         this.routes.get('/test',(req,res)=>{
             res.json({
                 success : true
@@ -51,6 +58,14 @@ class ManagerRoutes {
                 success : true
             })
         })
+        this.routes.post("/triggerUserMessageCount",(req,res)=>{
+            let count = req.body.count
+            let response = this.userManager.launchMessageFloodCount(count)
+            res.json({
+                success : true,
+                ...response
+            })
+        })
         this.routes.post("/forcealltoexit",(req,res) => {
             this.userManager.forceAllToExit();
             res.json({
@@ -63,6 +78,22 @@ class ManagerRoutes {
                 success : true,
                 ...response
             })
+        })
+        this.routes.post("/gatherlogs",(req,res)=>{
+            let browserIds = req.body.browserIds;
+            let response = this.userManager.requestLogs(browserIds)
+            res.json({
+                success : true,
+                ...response
+            })
+        })
+        this.routes.post("/gatherscreenshots",(req,res)=>{
+            let browserIds = req.body.browserIds;
+            let response = this.userManager.requestScreenshots(browserIds)
+            res.json({
+                success : true,
+                ...response
+            })        
         })
     }
 }

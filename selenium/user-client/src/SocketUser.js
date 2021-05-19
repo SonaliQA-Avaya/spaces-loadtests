@@ -4,10 +4,23 @@ const webdriver = require("selenium-webdriver")
 const By = webdriver.By
 const Keys = webdriver.Key 
 const until = webdriver.until;
+const logging= webdriver.logging;
 const path = require("path")
 const chrome = require("selenium-webdriver/chrome");
 const fs = require("fs")
 const {copyFileToGCS} = require("./helpers/storage");
+
+const writeFile = (fp,stringContent,options={}) => {
+    return new Promise((resolve,reject) => {
+        fs.writeFile(fp,stringContent,options,(err)=>{
+            if(err){
+                reject(err)
+            }else{
+                resolve(true)
+            }
+        })
+    })
+}
 
 class SocketUser{
     constructor(controlServerConfig){
@@ -21,6 +34,7 @@ class SocketUser{
         this.testType = null
     }
     async initDriver(){
+        console.log("initializing the driver")
         let chromeOptions = new chrome.Options()
         chromeOptions.addArguments([
             "--no-sandbox",
@@ -29,11 +43,73 @@ class SocketUser{
             "--use-fake-ui-for-media-stream",
             `--use-file-for-fake-video-capture=${path.join(__dirname,"../sample_video.y4m")}`
         ])
-        this.driver = await new webdriver.Builder().forBrowser("chrome").setChromeOptions(chromeOptions).build()
+        let logPreferences = new logging.Preferences()
+        logPreferences.setLevel(logging.Type.BROWSER,logging.Level.ALL)
+        this.driver = await new webdriver.Builder().forBrowser("chrome").setChromeOptions(chromeOptions).setLoggingPrefs(logPreferences).build()
+        // this.driver.sendDevToolsCommand("Log.enable",{})
+    }
+
+    async getBrowserLogs(){
+        let entries = await this.driver.manage().logs().get(logging.Type.BROWSER).catch(err=>{
+            console.log("Error getting browser logs", err)
+        })
+        if(!entries){
+            return
+        }
+        let logString = entries.map(entry => {
+            return `${entry.level.name} ${entry.message}`
+        }).join("\n")
+        let logName = process.env.browserId + "-server-requested" + "-" + Date.now().toString() + '-' + "clientlogs.txt"
+        let writeLogPath = path.join("/tmp/",logName)
+        let writeSuccess = await writeFile(writeLogPath,logString).catch(err => {
+            console.log("log write error ", err)
+        })
+        if(!writeSuccess){
+            return
+        }
+        await copyFileToGCS(writeLogPath)
+        fs.unlinkSync(writeLogPath)
+        return
+    }
+
+    async getErrorBrowserLogs(){
+        console.log("getting error browser logs")
+        let entries = await this.driver.manage().logs().get(logging.Type.BROWSER).catch(err=>{
+            console.log("Error getting browser logs", err)
+        })
+        if(!entries){
+            return
+        }
+        let startIndex = entries.length > 3000 ? entries.length - 3000 : 0   
+        let lastEntries = entries.slice(startIndex)
+        let logString = lastEntries.map(entry => {
+            return JSON.stringify(entry.toJSON(),null,2)
+        }).join("\n")
+        let logName = process.env.browserId + "-error" + "-" + Date.now().toString() + '-' + "clientlogs.txt"
+        let writeLogPath = path.join("/tmp/",logName)
+        let writeSuccess = await writeFile(writeLogPath,logString).catch(err => {
+            console.log("log write error ", err)
+        })
+        if(!writeSuccess){
+            return
+        }
+        await copyFileToGCS(writeLogPath)
+        fs.unlinkSync(writeLogPath)
+        return
     }
 
     async takeScreenShot(){
-        let imageName = process.env.browserId + "-" + Date.now().toString() + '-' + "screenshot.png"
+        let imageName = process.env.browserId + "-server-requested" + "-" + Date.now().toString() + '-' + "screenshot.png"
+        let writePath = path.join("/tmp/",imageName)
+        let image = await this.driver.takeScreenshot()
+        fs.writeFileSync(writePath,image,"base64")
+        await copyFileToGCS(writePath)
+        fs.unlinkSync(writePath)
+        return
+    }
+
+    async takeErrorScreenShot(){
+        let imageName = process.env.browserId + "-error" + "-" + Date.now().toString() + '-' + "screenshot.png"
         let writePath = path.join("/tmp/",imageName)
         let image = await this.driver.takeScreenshot()
         fs.writeFileSync(writePath,image,"base64")
@@ -43,6 +119,7 @@ class SocketUser{
     }
 
     async killDriver(){
+        console.log("killing the driver")
         await this.driver.quit()
         this.driver = null
     }
@@ -94,7 +171,8 @@ class SocketUser{
                 this.test = new Test(this.driver,testConfig,userDetails)
                 this.test.on("error",async (error)=>{
                     console.log("error", error)
-                    await this.takeScreenShot()
+                    await this.takeErrorScreenShot()
+                    await this.getErrorBrowserLogs()
                     this.socket.emit("test.error",{
                         message : error.message
                     })
@@ -117,6 +195,20 @@ class SocketUser{
             let messageTestTypes = ["basicMessage"]
             if(this.inTest && messageTestTypes.indexOf(this.testType) != -1 ){
                 this.test.emit("sendMessage",{})
+            }
+        })
+        this.socket.on("test.capturescreenshot",async ()=>{
+            console.log("server requested screenshot")
+            let messageTestTypes = ["basicMessage"]
+            if(this.inTest && messageTestTypes.indexOf(this.testType) != -1 ){
+                await this.takeScreenShot()
+            }
+        })
+        this.socket.on("test.capturelogs",async () => {
+            console.log("server requesting logs")
+            let messageTestTypes = ["basicMessage"]
+            if(this.inTest && messageTestTypes.indexOf(this.testType) != -1 ){
+                await this.getBrowserLogs()
             }
         })
         this.socket.on("test.forceful.exit", async() => {

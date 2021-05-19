@@ -57,7 +57,7 @@ class BasicMessage extends EventEmitter{
                     this.exitTriggered = true
                 }
             })
-            // await delayOffset()
+            await delayOffset()
             console.log("done delay offset")
             await this.goToDashboard()
             let bTrue = await this.isOnAccounts()

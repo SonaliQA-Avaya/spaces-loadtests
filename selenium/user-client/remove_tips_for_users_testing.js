@@ -47,15 +47,16 @@ MongoClient.connect(
 	let update = {
 		showFeatureTipsOnStartUp : false
 	}
-	for(let index = 924; index < users.length; index++){
+	for(let index = 0; index < users.length; index++){
 		if(index > 1000) break
 		let user = users[index]
 		let filter = { 'username' : user[0]}
 		let [usj1] = await findOne(filter)
 		if(!usj1){
 			usersWithNoSettingsObj.push(user)
+			continue
 		}
-		console.log(usj1.showFeatureTipsOnStartUp)
+		console.log(usj1.toc_version_agreed)
 		let updateResponse = await findOneAndUpdate(filter)
 		let [usj2] = await findOne(filter)
 		console.log(usj2.showFeatureTipsOnStartUp)

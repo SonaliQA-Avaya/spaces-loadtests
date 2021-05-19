@@ -70,6 +70,16 @@ class User extends EventEmitter{
             this.socket.emit("test.forceful.exit",{})
         }   
     }
+    sendRequestLog(){
+        if( this.state == "locked" && this.messageTestTypes.indexOf(this.testType) != -1 ){
+            this.socket.emit("test.capturelogs",{})
+        }   
+    }
+    sendRequestScreenshot(){
+        if( this.state == "locked" && this.messageTestTypes.indexOf(this.testType) != -1 ){
+            this.socket.emit("test.capturescreenshot",{})
+        }   
+    }
 }
 
 module.exports = User

@@ -1,3 +1,3 @@
 module.exports = {
-    controlServerIP : "104.155.171.110"
+    controlServerIP : "34.71.237.67"
 }

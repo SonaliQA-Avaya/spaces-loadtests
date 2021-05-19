@@ -3,6 +3,8 @@ const By = webdriver.By
 const Keys = webdriver.Key 
 const until = webdriver.until;
 const {EventEmitter} = require("events")
+const { v4: uuidv4 } = require('uuid');
+
 const delay = (millis)=>{
     return new Promise(resolve=>{
         setTimeout(resolve,millis)
@@ -379,9 +381,18 @@ class BasicMessage extends EventEmitter{
         await delay(5000)
     }
 
+    genMessagePayload(){
+        const traceId = uuidv4()
+        const browserId = process.env.browserId
+        const now = new Date()
+        let message = `TraceId:${traceId}_browserId:${browserId}_time:${now.toString()}`
+        return message
+    }
+
     async sendMessage(){
         let textBoxSelectorXPath = '/html/body/div/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[1]/div[2]/div'
-        await this.driver.findElement(By.xpath(textBoxSelectorXPath)).sendKeys("Hello World")
+        let message  = this.genMessagePayload()
+        await this.driver.findElement(By.xpath(textBoxSelectorXPath)).sendKeys(message)
         await delay(500)
         let buttonXPath = '/html/body/div/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[3]/button[2]'
         await this.driver.findElement(By.xpath(buttonXPath)).click()

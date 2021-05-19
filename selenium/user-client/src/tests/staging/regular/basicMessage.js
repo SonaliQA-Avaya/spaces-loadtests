@@ -3,6 +3,8 @@ const By = webdriver.By
 const Keys = webdriver.Key 
 const until = webdriver.until;
 const {EventEmitter} = require("events")
+const { v4: uuidv4 } = require('uuid');
+
 const delay = (millis)=>{
     return new Promise(resolve=>{
         setTimeout(resolve,millis)
@@ -40,6 +42,26 @@ class BasicMessage extends EventEmitter{
             if(this.exitTriggered){
                 break
             }
+            // Check if we are in the meeting
+            let bInMeeting = await this.checkIfInMeeting()
+            if(bInMeeting){
+                // console.log("In Meeting")
+            }else{
+                console.log("Not In Meeting")
+                throw new Error("User Surprisingly Not In Meeting")
+            }
+        }
+    }
+
+    async checkIfInMeeting(){
+        let meetingXPath = '//*[@id="VideoContainer"]/div/div[3]'
+        let bFound =  await this.driver.findElement(By.xpath(meetingXPath)).catch(err=>{
+            console.log("error trying to find the meeting button ", err)
+        })
+        if(bFound){
+            return true
+        }else{
+            return false
         }
     }
 
@@ -95,7 +117,7 @@ class BasicMessage extends EventEmitter{
         }catch(e){
             await delay(2000)
             this.emit("error",e)
-            await delay(2000)
+            await delay(20000)
             await this.backToGoogle()
         }
         await this.cleanBrowser()
@@ -155,7 +177,7 @@ class BasicMessage extends EventEmitter{
     }
 
     async joinMeeting(){
-        let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/button'
+        let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/div/button'
         let buttonElement = await this.driver.findElement(By.xpath(meetingButtonXPath)).click()
         await delay(10000)
     }
@@ -194,9 +216,18 @@ class BasicMessage extends EventEmitter{
         // }
     }
 
+    genMessagePayload(){
+        const traceId = uuidv4()
+        const browserId = process.env.browserId
+        const now = new Date()
+        let message = `traceId:${traceId}_browserId:${browserId}_time:${now.toString()}`
+        return message
+    }
+
     async sendMessage(){
-        let textBoxSelectorXPath = '/html/body/div/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[1]/div[2]/div'
-        await this.driver.findElement(By.xpath(textBoxSelectorXPath)).sendKeys("Hello World")
+        let textBoxSelectorXPath = '//*[@id="root"]/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[1]/div/div/div[1]/p'
+        let message  = this.genMessagePayload()
+        await this.driver.findElement(By.xpath(textBoxSelectorXPath)).sendKeys(message)
         await delay(500)
         let buttonXPath = '/html/body/div/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[3]/button[2]'
         await this.driver.findElement(By.xpath(buttonXPath)).click()

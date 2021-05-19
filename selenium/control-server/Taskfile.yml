@@ -3,12 +3,14 @@ version: '2'
 
 vars:
   GCP_PROJECT: spaces-dev-practice1
+  CLUSTER: spaces-practice-20
+  KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
 
 tasks:
   build-image:
     deps: []
     dir: ./
     cmds:
-      - sudo docker build -t testing-control-server .
-      - sudo docker tag testing-control-server gcr.io/{{ .GCP_PROJECT }}/testing-control-server
-      - sudo docker push gcr.io/{{ .GCP_PROJECT }}/testing-control-server
+      - docker build -t testing-control-server .
+      - docker tag testing-control-server gcr.io/{{ .GCP_PROJECT }}/testing-control-server
+      - docker push gcr.io/{{ .GCP_PROJECT }}/testing-control-server

@@ -6,10 +6,10 @@ const triggerMessageFlood = require("./actions/triggerMessageFlood")
 //////////////////
 // Test Variables
 const {controlServerIP} = require("./config") // communication assumed on port 80
-const spacesLink = "https://logantesting.esna.com/spaces/603444221d785c6f0e6aec1d"
+const spacesLink = "https://logantesting.esna.com/spaces/60468867e58d33aa57db1594"
 const environment = "testing"
 const testType = "basicMessage"
-const dispatchDelay = 7000
+const dispatchDelay = 10000
 const delay = (ms)=>{
     return new Promise(resolve=>{
         setTimeout(resolve,ms)
@@ -20,7 +20,7 @@ const delay = (ms)=>{
 // 10 users every 15 seconds for 2 minutes 80 users
 // 5 users every 15 seconds for 2 minutes 40 users
 
-const dispatchCountArray = [25,25,25,25,25,25,25,25,10,10,10,10,5,5,5,5]
+const dispatchCountArray = [10,10,10,10,20,20,20,20,20,50,50,50,50,100,100,100,50,50,50,50,20,20,20,20,10,10,10,10,10,10,10,10]
 
 const run = async () => {
     let response = await getUsers(controlServerIP)
