@@ -7,14 +7,18 @@ vars:
   KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
 
 tasks:
+  kube-context:
+    cmds:
+      - kubectl config use-context {{ .KUBE_CONTEXT }}
+
   clean:
-    deps: []
+    deps: [kube-context]
     dir: ./
     cmds: 
       - kubectl delete pods $(kubectl get pods | grep "fakeuser" | awk 'BEGIN { ORS=" "}; {print $1}')
 
   clean-few:
-    deps: []
+    deps: [kube-context]
     dir: ./
     cmds: 
       - kubectl delete pods $(kubectl get pods | grep "fakeuser" | head -n 300 | awk 'BEGIN { ORS=" "}; {print $1}')
@@ -28,13 +32,13 @@ tasks:
       - docker push gcr.io/{{ .GCP_PROJECT }}/testing-client
 
   run-large-meeting-test:
-    deps: []
+    deps: [kube-context]
     dir: ./
     cmds:
       - helm upgrade --install -f ./values.yaml fakeuser ./
 
   create-storage-secret:
-    deps: []
+    deps: [kube-context]
     dir: ./
     cmds:
       - kubectl create secret generic storage-key --from-file ../keys/storage-key.json
