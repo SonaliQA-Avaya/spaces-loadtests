@@ -5,6 +5,7 @@ module.exports = {
     "regular" : [
         "basic",
         "basicMessage",
-        "goToDashboard"
+        "goToDashboard",
+        "stayBasic"
     ]
 }
