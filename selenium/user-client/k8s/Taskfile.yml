@@ -4,7 +4,7 @@ version: '2'
 vars:
   GCP_PROJECT: spaces-dev-practice1
   CLUSTER: fake-user-cluster
-  KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
+  KUBE_CONTEXT: gke_spaces-dev-practice1_us-east1-b_fake-user-cluster
 
 tasks:
   kube-context:
