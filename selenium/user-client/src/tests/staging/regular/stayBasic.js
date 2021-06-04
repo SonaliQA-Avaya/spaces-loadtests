@@ -10,7 +10,7 @@ const delay = (millis)=>{
         setTimeout(resolve,millis)
     })
 }
-class BasicMessage extends EventEmitter{
+class stayBasic extends EventEmitter{
     constructor(driver,testConfig,userDetails){
         super()
         const {username,password} = userDetails
@@ -99,6 +99,7 @@ class BasicMessage extends EventEmitter{
                 await this.acceptTerms()
                 await delay(5000)
             }
+            await this.continueLastLogin()
             await this.waitUntilSpaceLoaded()
             console.log("should be in space right now")
             // await this.joinMeeting()
@@ -126,6 +127,22 @@ class BasicMessage extends EventEmitter{
             return bMatch
         }catch{
             return false
+        }
+    }
+
+    async continueLastLogin(){
+        let xpath = "/html/body/div[2]/div[2]/div/div/div/form/fieldset/div/button"
+        let tryCount = 0;
+        let maxTry = 5
+        while(tryCount < maxTry){
+            try{
+                await this.driver.findElement(By.xpath(xpath)).click()
+                break
+            }catch(e){
+                console.log("error clicking last login", e)
+                tryCount++
+                await delay(5000)
+            }
         }
     }
 
@@ -230,4 +247,4 @@ class BasicMessage extends EventEmitter{
     }
 }
 
-module.exports = BasicMessage
+module.exports = stayBasic
