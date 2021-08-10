@@ -19,7 +19,6 @@ mosaicLayout:
                   filter: >-
                     metric.type="custom.googleapis.com/spaces/socketio_client_numbers"
                     resource.label."cluster_name"="flavor-standalone"
-                    resource.label."container_name"="chat"
           timeshiftDuration: 0s
           yAxis:
             label: y1Axis

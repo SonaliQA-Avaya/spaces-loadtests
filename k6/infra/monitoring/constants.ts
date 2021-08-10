@@ -14,10 +14,9 @@ export const exportDashOptions: DashOptions = {
   urlMap: "k8s2-um-2zbbcib7-default-spaces-standalone-04m0fgql",
 };
 
-export const importDashOptions = {
-  cluster: "loganstaging-2020-default",
-  urlMap: "loganstaging2020-lb",
 export const importDashOptions: DashOptions = {
+  cluster: "loganstaging-2020-default",
+  urlMap: "loganstaging2020-lb"
 };
 
 // export const importDashOptions = {
