@@ -1,7 +1,7 @@
 # this is a socket heavy config
 
 # replicaCount x VUS = [total number of VUS]
-replicaCount: 12
+replicaCount: 100
 
 loadTest:
   vars:

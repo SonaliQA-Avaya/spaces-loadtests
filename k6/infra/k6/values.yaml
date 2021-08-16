@@ -4,7 +4,7 @@
 
 
 # replicaCount x VUS = [total number of VUS]
-replicaCount: 30
+replicaCount: 100
 
 loadTest:
   vars:
@@ -16,9 +16,9 @@ loadTest:
     VUS: 100  # per worker
     HOLD_MINUTES: 120
     VUS_PER_MINUTE: 1
-    SPACES_URL: https://loganstaging2020.esna.com
-    SPACES_API: "https://loganstaging2020apis.esna.com/api"
-    CHAT_WS: "wss://loganstaging2020apis-socket.esna.com"
+    SPACES_URL: https://loganstaging2.esna.com
+    SPACES_API: "https://loganstaging2apis.esna.com/api"
+    CHAT_WS: "wss://loganstaging2apis-socket.esna.com"
 
 
 datadog:
