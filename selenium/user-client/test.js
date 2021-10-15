@@ -19,7 +19,7 @@ const run = async ()=>{
     let driver = await new webdriver.Builder().forBrowser("chrome").setChromeOptions(chromeOptions).build()
     let testConfig = {
         environment : "staging",
-        spacesLink : "https://loganstaging2.esna.com/spaces/606f31d940192e14856d95af",
+        spacesLink : "https://loganstaging2020.esna.com/spaces/612edfb56b67fe5aed384aad",
         stayTime : 240000,
         messageFrequency : 1
     }

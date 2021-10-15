@@ -47,8 +47,8 @@ const run = async () => {
 
     // response = await forceUsersExit(controlServerIP)
     // console.log("force exit User response ", response)
-    response = await triggerMessageFlood(controlServerIP)
-    console.log("triggerMessageFlood ", response)
+    // response = await triggerMessageFlood(controlServerIP)
+    // console.log("triggerMessageFlood ", response)
 
 
 }

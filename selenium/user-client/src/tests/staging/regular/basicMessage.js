@@ -201,7 +201,8 @@ class BasicMessage extends EventEmitter{
     }
 
     async acceptPreviewMeeting(){
-        let joinButtonXPath = '/html/body/div/div/div[3]/div[3]/div[6]/div/div/div[1]/div/div/div/div[3]/div/button'
+        // let joinButtonXPath = '/html/body/div/div/div[3]/div[3]/div[6]/div/div/div[1]/div/div/div/div[3]/div/button'
+        let joinButtonXPath = '//*[@id="root"]/div/div[3]/div[3]/div[6]/div/div/div[1]/div/div/div/div[1]/div/div/div[3]/div/button/span'
         let buttonElement = await this.driver.findElement(By.xpath(joinButtonXPath)).click()
     }
 
