@@ -159,7 +159,7 @@ function run() {
     loadDashboard,
     joinTopicId: JOIN_TOPIC_ID
   };
-  const { topicId } = join(params);
+  const { topicId, clusterUrl, clusterSocketUrl } = join(params);
   joinCounter.add(1);
   if (!topicId) {
     sleep(1);
@@ -167,10 +167,10 @@ function run() {
   }
 
   if (__ENV.ENABLE_MPAAS) {
-    connectMpaas({ token, topicId });
+    connectMpaas({ token, topicId, clusterUrl });
   }
 
-  chat(Object.assign({}, params, { topicId }));
+  chat(Object.assign({}, params, { topicId, clusterUrl, clusterSocketUrl }));
 
   const endDelay = Math.floor(Math.random() * CYCLE_DELAY_MAX);
   sleep(endDelay);

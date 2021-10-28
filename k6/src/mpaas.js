@@ -13,14 +13,13 @@ export default function () {
   });
 }
 
-export function connectMpaas({ token, topicId }) {
+export function connectMpaas({ token, topicId, clusterUrl }) {
   let response;
   let checkRes;
   const authorization = `jwt ${token}`;
-  const { SPACES_API } = __ENV;
 
   response = http.get(
-    `${SPACES_API}/mediasessions/mpaas/token/${topicId}?isCollab=false`,
+    `${clusterUrl}/mediasessions/mpaas/token/${topicId}?isCollab=false`,
     {
       headers: {
         authorization,

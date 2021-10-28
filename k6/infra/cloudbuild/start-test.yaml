@@ -1,0 +1,40 @@
+substitutions:
+  _BUILD_WORKER_IMAGE: "no"
+  _VALUES_GROUP: default
+  _REPLICA_COUNT: "3"
+  _URL_FRONTEND: ""
+  _URL_API: ""
+  _URL_SOCKET: ""
+
+
+steps:
+
+  - id: Start load tests
+    name: 'gcr.io/$PROJECT_ID/k6-runner'
+    entrypoint: '/bin/bash'
+    args:
+      - "-eEuo"
+      - "pipefail"
+      - "-c"
+      - |
+        cd ./k6
+
+        if [[ "${_BUILD_WORKER_IMAGE}" == "yes" ]]; then   
+          task make-image
+        fi
+
+        # FIXME: getting timeout error
+        # task cloud:enable-node-pool
+
+        task cloud:kube-config
+
+        export _VALUES_GROUP=$_VALUES_GROUP
+        export _REPLICA_COUNT=$_REPLICA_COUNT
+        export _URL_FRONTEND=$_URL_FRONTEND
+        export _URL_API=$_URL_API
+        export _URL_SOCKET=$_URL_SOCKET
+
+        task cloud:run-with-params
+
+options:
+  dynamic_substitutions: true

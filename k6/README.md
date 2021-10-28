@@ -8,6 +8,9 @@
 
 `brew install go-task/tap/go-task`
 
+- install helm 
+
+`brew install helm`
 
 # Run locally
 

@@ -1,0 +1,23 @@
+substitutions:
+  _HELLO: "hi"
+
+steps:
+
+  # update node-pool to have 0 pods
+
+  - id: Stop load tests
+    name: 'gcr.io/$PROJECT_ID/k6-runner'
+    entrypoint: '/bin/bash'
+    args:
+      - "-eEuo"
+      - "pipefail"
+      - "-c"
+      - |
+        cd ./k6
+
+        task cloud:kube-config
+
+        task cloud:stop 
+
+options:
+  dynamic_substitutions: true

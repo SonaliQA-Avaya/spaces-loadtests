@@ -18,10 +18,13 @@ const NEW_MESSAGE_INTERVAL = __ENV.NEW_MESSAGE_INTERVAL || 30; //
 
 export default function () {
   const { token, topicId } = devOptions;
+  const { SPACES_API, CHAT_WS } = __ENV;
 
   chat({
     token,
     topicId,
+    clusterSocketUrl: CHAT_WS,
+    clusterUrl: SPACES_API,
   });
 }
 
@@ -34,11 +37,11 @@ const debug = (msg) => {
 };
 
 
-function chatConnection({token, user, topicId, timeout}) {
-  const { CHAT_WS, SPACES_API } = __ENV;
-  const url = `${CHAT_WS}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
+function chatConnection({token, user, topicId, clusterUrl, clusterSocketUrl, timeout}) {
+  const url = `${clusterSocketUrl}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
   let checkRes;
   let wsOpenTs;
+  debug(`WS connecting to ${url}`);
   const response = ws.connect(url, {}, function (socket) {
     let subscribeTime;
     socket.on("open", function open() {
@@ -50,6 +53,7 @@ function chatConnection({token, user, topicId, timeout}) {
         debug(`${__VU}: ping`);
       }, 1000 * 10);
     });
+
 
     const sendChatMessage = (msg) => {
       const typingMsg = {
@@ -174,6 +178,8 @@ function chatConnection({token, user, topicId, timeout}) {
       presenceEventSent.add(1);
     };
 
+
+
     socket.setInterval(function intervalMsg() {
       if (NEW_MESSAGE_CHANCE !== 1) {
         if (!isRandomPercent(NEW_MESSAGE_CHANCE)) {
@@ -188,13 +194,17 @@ function chatConnection({token, user, topicId, timeout}) {
       // console.log(msg);
       if (msg === "40") {
         socket.send("40/chat?token=" + token + "&tokenType=jwt,");
+        return;
       }
 
       if (msg === "40/chat") {
-        socket.send(
-          `42/chat,["SUBSCRIBE_CHANNEL",{"channel":{"_id":"${topicId}","type":"topic"}}]`
-        );
-        debug(`-->SUBSCRIBE_CHANNEL`);
+        socket.setTimeout(() => {
+          socket.send(
+            `42/chat,["SUBSCRIBE_CHANNEL",{"channel":{"_id":"${topicId}","type":"topic"}, "version": "1.1"}]`
+          );
+          debug(`-->SUBSCRIBE_CHANNEL, topicId=${topicId}`);
+        }, 100)
+        return;
       }
 ;
 
@@ -227,7 +237,7 @@ function chatConnection({token, user, topicId, timeout}) {
           if (payload.category === "chat" && payload.sender._id !== user._id) {
             chatMsgReceived.add(1);
             const resp = http.post(
-              `${SPACES_API}/users/me/spaces/${topicId}/markread`,
+              `${clusterUrl}/users/me/spaces/${topicId}/markread`,
               '{}',
               {
                 headers: {
@@ -254,7 +264,7 @@ function chatConnection({token, user, topicId, timeout}) {
       console.log(`vu: ${__VU}: WS closed, was open for ${conTime/1000} sec`);
       if (conTime < timeout) {
         console.log(`vu: ${__VU}: connection dropped, reconnecting for ${(timeout - conTime)/1000}s`)
-        chatConnection({token, user, topicId, timeout: timeout - conTime});
+        chatConnection({token, user, topicId, timeout: timeout - conTime, clusterUrl, clusterSocketUrl});
       }
     });
 
@@ -291,11 +301,10 @@ function chatConnection({token, user, topicId, timeout}) {
   wsErrorRate.add(!checkRes);
 }
 
-export function chat({ token, topicId }) {
-  const { SPACES_API } = __ENV;
+export function chat({ token, topicId, clusterUrl, clusterSocketUrl }) {
 
   let checkRes;
-  let meResp = http.get(`${SPACES_API}/users/me`, {
+  let meResp = http.get(`${clusterUrl}/users/me`, {
     headers: {
       accept: "application/json",
       authorization: `jwt ${token}`,
@@ -320,7 +329,7 @@ export function chat({ token, topicId }) {
 
   const timeout = 1000 * CHAT_DURATION;
   try {
-    chatConnection({token, user, timeout, topicId})
+    chatConnection({token, user, timeout, topicId, clusterUrl, clusterSocketUrl})
   } catch(e) {
     console.error(e);
   }

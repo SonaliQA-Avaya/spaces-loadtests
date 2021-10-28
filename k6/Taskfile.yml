@@ -3,9 +3,9 @@
 version: '2'
 
 vars:
-  SPACES_URL: https://loganstaging2.esna.com
-  SPACES_API: https://loganstaging2apis.esna.com/api
-  CHAT_WS: wss://loganstaging2apis-socket.esna.com
+  SPACES_URL: https://spaces-sit.esna.com
+  SPACES_API: https://spaces-sitapis.esna.com/api
+  CHAT_WS: wss://spaces-sitapis-socket.esna.com
 
   # SPACES_URL: https://loganstaging2.esna.com
   # SPACES_API: "https://loganstaging2apis.esna.com/api"

@@ -4,6 +4,7 @@ version: '2'
 vars:
   GCP_PROJECT: onesnastaging
   CLUSTER: loadtest-k6
+  NODE_POOL: default-pool-2021
   ZONE: us-central1-c
   KUBE_CONTEXT: gke_onesnastaging_us-central1-c_loadtest-k6
 
@@ -17,6 +18,14 @@ tasks:
     cmds:
       - kubectl config use-context {{ .KUBE_CONTEXT }}
 
+
+  enable-node-pool:
+    cmds:
+      - |
+        gcloud container node-pools update {{ .NODE_POOL }} --min-nodes=1 \
+          --cluster {{ .CLUSTER }} --zone {{ .ZONE }} --project {{ .GCP_PROJECT }}
+
+
   push-image:
     desc: Build and push docker image with k6 script
     deps: [kube-context]
@@ -27,11 +36,11 @@ tasks:
 
   stop:
     cmds:
-      - helm ls | awk '/deployed/ { print $1 }' | xargs -tn1 helm delete
+      - helm ls | awk '/deployed/ { print $1 }' | xargs {{if eq OS "linux"}}-r{{end}} helm delete
 
   stop-2:
     cmds:
-      - helm ls -n secondary | awk '/deployed/ { print $1 }' | xargs -tn1 helm delete -n secondary
+      - helm ls -n secondary | awk '/deployed/ { print $1 }' | xargs {{if eq OS "linux"}}-r{{end}} helm delete -n secondary
 
   stop-all:
     deps: [kube-context]
@@ -44,7 +53,30 @@ tasks:
     deps: [stop-all]
     dir: ./infra
     cmds:
-      - helm upgrade --install -f ./k6/values.yaml k6-worker ./k6
+      - helm upgrade --install -f ./k6/values-default.yaml k6-worker ./k6
+
+  run-with-params:
+    desc: run load tests and provide params
+    deps: [stop-all]
+    dir: ./infra
+    cmds:
+      - |
+      
+        [[ -z "$_VALUES_GROUP" ]] && echo "_VALUES_GROUP is empty" && exit 1
+        [[ -z "$_REPLICA_COUNT" ]] && echo "_REPLICA_COUNT is empty" && exit 1
+        [[ -z "$_URL_FRONTEND" ]] && echo "_URL_FRONTEND is empty" && exit 1
+        [[ -z "$_URL_API" ]] && echo "_URL_API is empty" && exit 1
+        [[ -z "$_URL_SOCKET" ]] && echo "_URL_SOCKET is empty" && exit 1
+        echo "all vars are set"
+
+      - |
+        helm upgrade --install -f ./k6/values-${_VALUES_GROUP}.yaml \
+          --set replicaCount=$_REPLICA_COUNT \
+          --set loadTest.vars.SPACES_URL=$_URL_FRONTEND \
+          --set loadTest.vars.SPACES_API=$_URL_API \
+          --set loadTest.vars.CHAT_WS=$_URL_SOCKET \
+          k6-worker ./k6
+
 
   run-large-meeting:
     deps: [stop-all]

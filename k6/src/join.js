@@ -8,11 +8,11 @@ export const options = { vus: 10, duration: "5m" };
 
 export default function () {
   const token =
-    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkX3NpZyI6Ik93SF9XaUVQTGMyQjQ0OWlMNzR4RjY2MGRuYkpqeldZMmZ3Y2xOYVoyMGciLCJwcm9kdWN0X3R5cGUiOiJhY2NvdW50cyIsImxhc3R1cGRhdGV0aW1lIjoiMjAyMC0wNy0zMFQxNToxODoxMy40OTkiLCJpc3MiOiJlc25hLmNvbSIsInB1YmxpY2tleWlkIjoiYWc5emZtOXVaWE51WVhOMFlXZHBibWR5R2dzU0RVZEtkM1JRZFdKc2FXTkxaWGtZZ0lDQXB0Q2Eyd2dNIiwiZXhwIjoxNTk5MzQwMDU0LCJ1c2VyX2lkIjoiYWc5emZtOXVaWE51WVhOMFlXZHBibWR5RVFzU0JGVnpaWElZZ0lDQXhvUHRpZ2tNIiwidmVyIjoiMi4wIn0.d7dFKvNVvt8QWOv3bYHwxKm44YmBkudksTl_xQnSmGxeIZFLMgJ7kHR5-uQ-QXviqPJ6YJ6nGR3cKYXiF--cpx_XmMuIYHFHMVtPS6EErSlC54xde-oTsIRsJfjXbrEbjJwRbKa7M96eGPgwv1nOPg2Qpv9vFFf-Cx6qIAv6VbbepLpEBfkKDCrWBjRpt7pia6ZE1fzpK486B_sXjSn-7yGvMvuYodir8jMj7twaVUeXs7XO5-P_eRa4xP-FzwqY0P2uUDKRaSDbblRRu3NYaAMl2F95rY4lyTwju_6ELMpyhnybb-IXg9Ic8lL6905-mA0ZjuH-nuGMu8xmkTvtpA";
-  const organizer = "user1@ericloadtest.com";
+    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkX3NpZyI6IlRoWkFIRDVENnhENk1qVlVVY2VObTNfanNYRkZVcEh5b28xWkRDZENpN2MiLCJwcm9kdWN0X3R5cGUiOiJhY2NvdW50cyIsImxhc3R1cGRhdGV0aW1lIjoiMjAyMS0wNC0wNVQxNjoxNjoyMC4xNTciLCJpc3MiOiJlc25hLmNvbSIsInB1YmxpY2tleWlkIjoiYWc5emZtOXVaWE51WVhOMFlXZHBibWR5R2dzU0RVZEtkM1JRZFdKc2FXTkxaWGtZZ0lDQXM0LWl3UXNNIiwiZXhwIjoxNjM0MzM5NjMzLCJ1c2VyX2lkIjoiYWc5emZtOXVaWE51WVhOMFlXZHBibWR5RVFzU0JGVnpaWElZZ0lDQWx0LUFnd2tNIiwidmVyIjoiMi4wIn0.KpP_xfZjuOrlTUv-H_paLGVanQT0XNSdCrIh-vWGYBkqnNLv5k-Zz5tFOMxX914v6L5ja_jF4hLsMFRgH6In5TpYwVOCTsorwk1Cb-CeA2u0-fMXAZegQEVxRExWH1TcD3X29FTWJpt7d8wylLVDNc0uC8EqU6egYDypl1wE5Ju2Mw8Jo9GF1k7E_i4tatMPFUtVh0Wv0xfTs5f3XEHhdmWTtplZowWiv8xwJlZVyYln99pJjeoctpR2excBbGkfXO1JBrweXCN2v16XTAQANQKNTOJ4nLqv3oZOPCsOV4Gs7VKsM3amRi0LHA9ejmqpcuvX0cdlT_QLH_E-NYXQkA";
+  const organizer = "roman@notegraph.com";
   const isGuest = false;
-  const loadDashboard = true;
-  const joinTopicId = "5fca9bf4a507404a1865ff1c"
+  const loadDashboard = false;
+  const joinTopicId = null; // "5fca9bf4a507404a1865ff1c"
   const { topicId } = join({ token, isGuest, organizer, loadDashboard, joinTopicId });
   console.log(`topicId = ${topicId}`);
   // Automatically added sleep
@@ -24,10 +24,11 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   if (joinTopicId && __ENV.SKIP_JOIN_API_CALLS) {
     return {
       topicId: joinTopicId,
+      meetingClusterUrl: SPACES_API,
     };
 
   }
-  const { SPACES_API } = __ENV;
+  const { SPACES_API, CHAT_WS } = __ENV;
   const authorization = `jwt ${token}`;
   let response;
   let checkRes;
@@ -56,6 +57,18 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   });
   checkRes = check(response, { "status is 200": (r) => r && r.status === 200 });
   errorRate.add(!checkRes);
+
+  response = http.get(`${SPACES_API}/flavor`, {
+    headers: {
+      accept: "application/json",
+      authorization,
+      "content-type": "application/json",
+    },
+  });
+  checkRes = check(response, { "status is 200": (r) => r && r.status === 200 });
+  errorRate.add(!checkRes);
+  const flavors = response.json();
+
 
   if (!isGuest) {
     response = http.get(`${SPACES_API}/users/me/featuresrollout`, {
@@ -102,10 +115,32 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   errorRate.add(!checkRes);
 
   let topicId;
+  let clusterUrl = SPACES_API;
+  let clusterSocketUrl = CHAT_WS
   if (joinTopicId) {
+    // TODO: detect flavor
     topicId = joinTopicId;
   } else {
-    response = http.get(`${SPACES_API}/users/meetingroom/${organizer}?`, {
+    // 
+    response = http.get(`${SPACES_API}/flavor/email/${organizer}?`, {
+      headers: {
+        accept: "application/json",
+        authorization,
+        "content-type": "application/json",
+      },
+    });
+    checkRes = check(response, { "status is 200": (r) => r && r.status === 200 });
+    errorRate.add(!checkRes)
+    const meetingRoom = response.json();
+    if (!meetingRoom.useGlobal) {
+      const flavor = flavors.find(x => x.flavorId === meetingRoom.flavorId);
+      clusterUrl = flavor.urls.apis + '/api';
+      //TODO: convert https:// to wss:// ?
+      clusterSocketUrl = flavor.urls.socket;
+      clusterSocketUrl = clusterSocketUrl.replace(/^https:/, 'wss:');
+    }
+
+    response = http.get(`${clusterUrl}/users/meetingroom/${organizer}?`, {
       headers: {
         accept: "application/json",
         authorization,
@@ -177,7 +212,7 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   checkRes = check(response, { "status is 200": (r) => r && r.status === 200 });
   errorRate.add(!checkRes);
 
-  response = http.get(`${SPACES_API}/spaces/${topicId}/join/`, {
+  response = http.get(`${clusterUrl}/spaces/${topicId}/join/`, {
     headers: {
       accept: "application/json",
       authorization,
@@ -188,7 +223,7 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   errorRate.add(!checkRes);
 
   response = http.get(
-    `${SPACES_API}/topics/${topicId}/messages/byref?size=30`,
+    `${clusterUrl}/topics/${topicId}/messages/byref?size=30`,
     {
       headers: {
         accept: "application/json",
@@ -200,7 +235,7 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
   checkRes = check(response, { "status is 200": (r) => r && r.status === 200 });
   errorRate.add(!checkRes);
 
-  response = http.get(`${SPACES_API}/spaces/${topicId}/activemeeting`, {
+  response = http.get(`${clusterUrl}/spaces/${topicId}/activemeeting`, {
     headers: {
       accept: "application/json",
       authorization,
@@ -215,6 +250,8 @@ export function join({ token, isGuest, organizer, loadDashboard, joinTopicId }) 
 
   return {
     topicId,
+    clusterUrl,
+    clusterSocketUrl
   };
 }
 
