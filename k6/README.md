@@ -128,3 +128,8 @@ run k6 start trigger with `_BUILD_WORKER_IMAGE=yes` or with `task make-image`
 # Other docs
  
 [QC k6 notes from Sonali](https://confluence.forge.avaya.com/pages/viewpage.action?pageId=241784580)
+
+
+[Testing method, join rate](https://vacoss-my.sharepoint.com/:w:/g/personal/rlyashov_vaco_com/EeYbJn7fHPUkNZ1MuvMXS3oBjk3ZNHirInDX5pvi-6u6ng?e=UbBPlN)
+
+[Load test report - Sep, 2020](https://vacoss-my.sharepoint.com/:w:/g/personal/rlyashov_vaco_com/EamUZVOXmTojp8yXV18IFqsB80UgyDgxshqpwwNVUoEd5g?e=hbKcog)
