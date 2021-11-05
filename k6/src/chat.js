@@ -41,7 +41,7 @@ function chatConnection({token, user, topicId, clusterUrl, clusterSocketUrl, tim
   const url = `${clusterSocketUrl}/socket.io/?token=${token}&tokenType=jwt&EIO=3&transport=websocket&batchRoster=true`;
   let checkRes;
   let wsOpenTs;
-  debug(`WS connecting to ${url}`);
+  debug(`${__VU}: WS connecting to ${url}`);
   const response = ws.connect(url, {}, function (socket) {
     let subscribeTime;
     socket.on("open", function open() {

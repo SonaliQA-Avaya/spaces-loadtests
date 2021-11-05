@@ -28,7 +28,7 @@ tasks:
 
   push-image:
     desc: Build and push docker image with k6 script
-    deps: [kube-context]
+    deps: []
     # dir: '..'
     cmds:
       - docker build -t gcr.io/{{.GCP_PROJECT}}/k6-worker:latest .

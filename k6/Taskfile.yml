@@ -3,13 +3,13 @@
 version: '2'
 
 vars:
-  SPACES_URL: https://spaces-sit.esna.com
-  SPACES_API: https://spaces-sitapis.esna.com/api
-  CHAT_WS: wss://spaces-sitapis-socket.esna.com
+  # SPACES_URL: https://spaces-sit.esna.com
+  # SPACES_API: https://spaces-sitapis.esna.com/api
+  # CHAT_WS: wss://spaces-sitapis-socket.esna.com
 
-  # SPACES_URL: https://loganstaging2.esna.com
-  # SPACES_API: "https://loganstaging2apis.esna.com/api"
-  # CHAT_WS: "wss://loganstaging2pis-socket.esna.com"
+  SPACES_URL: https://loganstaging.esna.com
+  SPACES_API: "https://loganstagingapis.esna.com/api"
+  CHAT_WS: "wss://loganstagingapis-socket.esna.com"
 
   DATADOG_API_KEY: 411f6c91025bbdcba65fb3721d5ce4a4
 
@@ -24,7 +24,7 @@ tasks:
 
   join-test:
     cmds:
-      - k6 run -u 1 -d 10s src/join.js -e SPACES_API={{.SPACES_API}}
+      - k6 run -u 1 -d 10s src/join.js -e SPACES_API={{.SPACES_API}} -e DEBUG=1 
 
   chat-test:
     cmds:
@@ -45,11 +45,11 @@ tasks:
   quick-run:
     cmds:
       - |
-        k6 run src/spaces.test.js -e VUS=1 \
+        k6 run src/spaces.test.js -e VUS=5 \
           -e SPACES_API={{.SPACES_API}} \
           -e CHAT_WS={{.CHAT_WS}} -e SPACES_URL={{ .SPACES_URL }} \
           -e CHAT_DURATION=3600 -e DEBUG=1 \
-          -e NEW_MESSAGE_INTERVAL=300 -e SKIP_JOIN_MESSAGE=1 -e NEW_MESSAGE_CHANCE=0.10 \
+          -e NEW_MESSAGE_INTERVAL=60 -e SKIP_JOIN_MESSAGE=1 -e NEW_MESSAGE_CHANCE=0.70 \
           -e HOLD_MINUTES=120
 
 
@@ -89,7 +89,8 @@ tasks:
       # brew install coreutils
       - rm -rf users-chunked
       - mkdir users-chunked
-      - gsplit -d -a 4 -l 100 user-pwd-full.csv users-chunked/users_ --additional-suffix=.csv
+      - |
+        {{if eq OS "darwin"}}g{{end}}split -d -a 4 -l 100 user-pwd-full.csv users-chunked/users_ --additional-suffix=.csv
 
   datadog-agent-start:
     cmds:

@@ -14,6 +14,7 @@ filter: |-
 
   NOT textPayload:"[OsUtilsGke] [init] Error: HTTP Error 403 on API call"
   NOT textPayload:"[OsUtilsGke] [_kubernetes] HTTP Error 403"
+  NOT textPayload:"[getConfigItemPromise]"
 labelExtractors:
   container_name: EXTRACT(resource.labels.container_name)
 metricDescriptor:

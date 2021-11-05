@@ -70,7 +70,7 @@ export const login = ({ username, password }) => {
     }
   );
   check(response, {
-    "status is 302": (r) => r && r.status === 302,
+    // "status is 302": (r) => r && r.status === 302,
     "has cookie 'AUTH_TOKEN'": (r) =>
       r && r.cookies.AUTH_TOKEN && r.cookies.AUTH_TOKEN.length > 0,
     "no invalid password msg": (r) =>

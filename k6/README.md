@@ -1,48 +1,17 @@
-# Installation 
+# Running load tests
 
-- install k6 
+Even though tests can be started from the local terminal, it requires some tools to be installed. It's much easier to use cloudbuild trigger to start or stop the test 
 
-`brew install k6`
+e.g. [loadtests-k6-start-loganstaging](https://console.cloud.google.com/cloud-build/triggers/edit/f45ff496-e7f5-4d2d-8d76-ebd72aabaf62?project=onesnastaging)
 
-- install go task 
+to see all triggers simply filter by `k6` in [loganstaging cloudbuild triggers](https://console.cloud.google.com/cloud-build/triggers?project=onesnastaging&pageState=(%22triggers%22:(%22f%22:%22%255B%257B_22k_22_3A_22_22_2C_22t_22_3A10_2C_22v_22_3A_22_5C_22k6_5C_22_22%257D%255D%22)))
 
-`brew install go-task/tap/go-task`
+ 
+## Start load test from local command line 
 
-- install helm 
-
-`brew install helm`
-
-# Run locally
-
-All mentioned commands are configured in `Taskfile.yml`, see this file for more details and config options.
-
-## Start Grafana 
-
-to collect stats, `Grafana` should be started with `task grafana-start`. Grafana dashboard is available at `http://localhost:3000`. 
-Custom dashboard to monitor WebSocket taffic is part of this repo, see `grafana/dashboard`. More dashboards are referenced from [k6 Grafan docs](https://k6.io/docs/results-visualization/influxdb-+-grafana#preconfigured-grafana-dashboards)
-
-## Run quick load test
-
-`task quick-run` - will run quick test (most likely 10 users for 10 minutes). It's used to test is the script is fully functional.
+It still runs tests from kube cluster [loadtests-k6](https://console.cloud.google.com/kubernetes/clusters/details/us-central1-c/loadtest-k6/details?project=onesnastaging) with this option.
 
 
-## Run load test with full data locally
-
-Before running this task first time, you need to split big csv file into smaller chunks, so each virtual user only reads small file with account info, it reduces memory requirements. 
-
-- `task split-data-file`
-
-**NOTE** it requires `GNU` `split` installed, can be done with `brew install coreutils`
-
-**run load test** 
-
-- on mac execute `ulimit -n 24000` in the terminal before running the test, it changes the limit on number of open files in the current session only, without it you may start getting errors `socket: too many open files` with `VUS > 50`
-- `task run-local` will ran test with configuratin taked from `src/spaces.test.js` `options` object 
-
-
-# Run in GCP 
-
-## Run load test in the cloud 
 
 **first time**: Make sure that `kubectl context` for `loadtest-k6` project exists on your machine.
 
@@ -69,7 +38,55 @@ to modify test settings update `infra/k6/values.yaml`
 
 - `task cloud:stop-all` after finishing load test to remove idle datadog agents
 
-## Config options 
+
+# Development
+## Installation
+
+- install k6 
+
+```
+
+brew install k6
+brew install go-task/tap/go-task
+brew install helm
+brew install gsplit
+```
+
+## Run 
+
+All mentioned commands are configured in `Taskfile.yml`, see this file for more details and config options.
+
+### Run quick load test
+
+`task quick-run` - will run quick test (most likely 10 users for 10 minutes). It's used to test that the script is fully functional.
+
+
+Each operation: login, join, chat can be executed directly by running: 
+
+- `task login-test`
+- `task join-test`
+- `task chat-test`
+- `task anon-test`
+
+To see requests/response add `--http-debug` parameter to `k6 run` command in Taskfile.yml
+
+
+### Run load test with full data locally
+
+Before running this task first time, you need to split big csv file into smaller chunks, so each virtual user only reads small file with account info, it reduces memory requirements. 
+
+- `task split-data-file`
+
+**NOTE** it requires `GNU` `split` installed, can be done with `brew install coreutils`
+
+**run load test** 
+
+- on mac execute `ulimit -n 24000` in the terminal before running the test, it changes the limit on number of open files in the current session only, without it you may start getting errors `socket: too many open files` with `VUS > 50`
+- `task run-local` will ran test with configuratin taked from `src/spaces.test.js` `options` object 
+
+
+
+# Config options 
 
 - `CHAT_DURATION` - how long in seconds websocket connection stays open until test loop end and start over again, it's used to simulate chat session duration
 
@@ -101,18 +118,13 @@ to modify test settings update `infra/k6/values.yaml`
 
 - there is a small delay after executing 
 
-## Development
-
-Each operation: login, join, chat can be executed directly by running: 
-
-- `task login-test`
-- `task join-test`
-- `task chat-test`
-- `task anon-test`
-
-To see requests/response add `--http-debug` parameter to `k6 run` command in Taskfile.yml
-
 
 ### Build and push docker image for cloud runs
 
-- `task make-image`
+
+run k6 start trigger with `_BUILD_WORKER_IMAGE=yes` or with `task make-image`
+
+
+# Other docs
+ 
+[QC k6 notes from Sonali](https://confluence.forge.avaya.com/pages/viewpage.action?pageId=241784580)

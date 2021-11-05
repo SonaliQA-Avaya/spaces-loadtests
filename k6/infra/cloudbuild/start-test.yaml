@@ -5,9 +5,26 @@ substitutions:
   _URL_FRONTEND: ""
   _URL_API: ""
   _URL_SOCKET: ""
+  _GO_TASK_URL: https://github.com/go-task/task/releases/download/v3.9.0/task_linux_amd64.tar.gz
 
 
 steps:
+
+  - id: build image
+    name: gcr.io/cloud-builders/docker
+    entrypoint: /bin/bash
+    args:
+      - "-eEuo"
+      - "pipefail"
+      - "-c"
+      - |
+        cd ./k6
+        if [[ "${_BUILD_WORKER_IMAGE}" == "yes" ]]; then  
+          echo "download go-task"
+          curl -SL ${_GO_TASK_URL} -o task.tar.gz && tar zxvf task.tar.gz    
+          echo "building new image"
+          ./task make-image
+        fi
 
   - id: Start load tests
     name: 'gcr.io/$PROJECT_ID/k6-runner'
@@ -18,13 +35,6 @@ steps:
       - "-c"
       - |
         cd ./k6
-
-        if [[ "${_BUILD_WORKER_IMAGE}" == "yes" ]]; then   
-          task make-image
-        fi
-
-        # FIXME: getting timeout error
-        # task cloud:enable-node-pool
 
         task cloud:kube-config
 
