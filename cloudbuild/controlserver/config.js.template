@@ -1,0 +1,4 @@
+module.exports = {
+    host : "_CONTROL_SERVER_IP_",
+    port : 80
+}

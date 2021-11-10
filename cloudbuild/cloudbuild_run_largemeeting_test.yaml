@@ -1,0 +1,230 @@
+# _DEPLOY_TO_CLUSTER_NAME
+# _CLUSTER_DOMAIN_URL
+# _BACKEND_GIT_BRANCH
+
+# gs://cloudbuild-esna-testing/slack-webhook-00.txt ---> testing account
+# gs://cloudbuild-esna-testing/workspace/slack-webhook-01.txt ---> esna development channel
+# sed -i.bak "s#/logan-testcase?#${_BUILD_ENV}_testcase?#g" /app/test/testcase-config.json
+
+substitutions:
+
+
+#  _BUILD_ENV: practice
+
+steps:
+
+  # Prepare Large Meeting Test
+  - id: Prepare Large Meeting Test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        ls -l /
+
+        echo "Preparing to run load test..."
+        echo "Starting remote Control Server VM..."
+
+        gcloud compute instances start loadtest --project spaces-dev-practice1 --zone=us-central1-a 2>&1 |tee /workspace/STARTCONTROLSERVER
+        controlserverip=`cat /workspace/STARTCONTROLSERVER |grep external |rev | awk '{print $1}'|rev`
+        if [[ "$controlserverip" != "" ]];
+        then
+           echo "Control Server IP: $controlserverip"
+        else
+           echo "Could not determine control server IP..."
+           exit -1
+        fi
+
+        gcloud config set project spaces-dev-practice1
+        gcloud container clusters list |tee /tmp/clusters
+        numnodes=`cat /tmp/clusters |grep "fake-user-cluster" |awk '{print $7}'`
+        gcloud container clusters get-credentials fake-user-cluster --zone us-east1-b
+        if [[ $numnodes -lt 100 ]];
+        then
+           # Scale the fake-user-cluster up from 5 to at least 100 to speed things up
+           echo "Scaling up fakeuser cluster... this will take some time."
+           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async
+        else
+           echo "There are already $numnodes nodes in the cluster.  Skipping resize..."
+        fi
+
+        echo "Getting current GKE context..."
+        kubectl config current-context
+        if [[ "_SPACESLINK" == "" ]];
+        then
+           echo "_SPACESLINK is not defined"
+           exit -1
+        fi
+        echo "Using Spaces link: $_SPACESLINK"
+        system=`echo $_SPACESLINK |awk -F '/' '{print $3}'`
+        if [[ "$system" == "loganstaging.esna.com" ]];
+        then
+           cluster="loganstaging-default"
+           project="onesnastaging"
+        fi
+        echo "Determining zone for cluster: $cluster"
+        zone=`gcloud container clusters list --project $project |grep $cluster |awk '{print $2}'`
+
+        if [[ "$cluster" != "" && "$zone" != "" ]];
+        then
+           large_minfront="60"
+           large_minsocket="20"
+           large_mintask="20"
+           echo "ZONE: $zone CLUSTER: $cluster"
+           #echo "Getting credentials for cluster: $cluster"
+           gcloud container clusters get-credentials --project $project --zone $zone $cluster
+        
+           kubectl get hpa > /tmp/hpa
+           cat /tmp/hpa
+        
+           hpa_front="spaces-frontend"
+           hpa_socket="spaces-socket"
+           hpa_task="spaces-task"
+        
+           minfront=`cat /tmp/hpa |grep spaces-frontend |awk '{print $4}'`
+           minsocket=`cat /tmp/hpa |grep spaces-socket |awk '{print $4}'`
+           mintask=`cat /tmp/hpa |grep spaces-task |awk '{print $4}'`
+           
+           #echo "$minfront $minsocket $mintask"
+           hpa_array=($hpa_front $hpa_socket $hpa_task)
+           hpa_curarray=($minfront $minsocket $mintask)
+           hpa_largearray=($large_minfront $large_minsocket $large_mintask) 
+        
+           for i in `seq 0 2`; do
+              if [[ ${hpa_curarray[$i]} -lt ${hpa_largearray[$i]} ]];
+              then 
+                 echo "############################################################"
+                 echo "# The minimum number of PODs for ${hpa_array[$i]} is too low."
+                 echo "#"
+                 echo "# Required: ${hpa_largearray[$i]}, actual: ${hpa_curarray[$i]}"
+                 echo "#"
+                 echo "###########################################################"
+                 echo "Fixing HPA: ${hpa_array[$i]}"
+                 if [[ "${hpa_array[$i]}" == "spaces-task" ]];
+                 then 
+                    kubectl patch hpa ${hpa_array[$i]} -p '{"spec":{"maxReplicas": '${hpa_largearray[$i]}'}}'
+                 fi
+                 kubectl patch hpa ${hpa_array[$i]} -p '{"spec":{"minReplicas": '${hpa_largearray[$i]}'}}'
+                 kubectl get hpa
+              fi
+           done
+
+        else
+           echo "Unknown cluster.  Cannot verify cluster is sized properly."
+           echo "Large meeting test may fail if HPAs and MongoDB are not sized properly"
+        fi
+
+  # run Large Meeting Test
+  - id: Run Large Meeting Test
+    name: 'gcr.io/cloud-builders/npm'
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        ls -l /
+
+        #curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        #chmod 700 get_helm.sh
+        #./get_helm.sh
+        #curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+        # Clean out the errors and screenshots from the log bucket
+        echo "Removing previous logs and screenshots..."
+        gsutil -m rm gs://rajiv-testing-selenium-screenshots/*
+
+        cp cloudbuild/helm/helm /usr/bin/helm
+        cp cloudbuild/kubectl/kubectl /usr/bin/kubectl
+
+        #apt update
+        #apt install -y apt-transport-https ca-certificates 
+        #apt upgrade -y curl
+
+        #curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+        echo "Node version:"
+        node --version
+
+        echo "Yarn version:"
+        yarn --version
+
+        echo "helm version:"
+        helm version
+
+        echo "kubectl version:"
+        kubectl version
+
+        # Install go-task
+        dpkg -i cloudbuild/go-task/task_linux_amd64.deb
+
+        #curl -O https://taskfile.dev/install.sh
+        #sh ./install.sh -b /usr/bin
+
+        which task
+
+        echo "go-task version:"
+        task version
+
+        controlserverip=`cat /workspace/STARTCONTROLSERVER |grep external |rev | awk '{print $1}'|rev`
+        if [[ "$controlserverip" != "" ]];
+        then
+           echo "Control Server IP: $controlserverip"
+        else
+           echo "Could not determine control server IP..."
+           exit -1
+        fi
+
+        #ln -s /usr/bin/nodejs /usr/bin/node
+        echo "Simulating $_NUMUSERS fake users"
+        echo "User arrival rate: $_BATCHSIZE"
+        echo "Hours to run test: $_HOURS"
+        milliseconds=`expr $_HOURS \* 3600000`
+        echo Test will run for $milliseconds ms
+        echo "Generating config.js in selenium/control-server"
+        cat cloudbuild/controlserver/config.js.template |sed "s/_CONTROL_SERVER_IP_/$controlserverip/g" > selenium/control-server/config.js
+        echo "Generating config.js in selenium/control-server/control-client"
+        cat cloudbuild/controlclient/config.js.template |sed "s/_CONTROL_SERVER_IP_/$controlserverip/g" > selenium/control-server/control-client/config.js
+        echo "Generating values.yaml in selenium/user-client/k8s"
+        cat cloudbuild/userclient/k8s/values.yaml.template |sed "s/_CONTROL_SERVER_IP_/$controlserverip/g" |sed "s/_NUM_USERS_/$_NUMUSERS/g" > selenium/user-client/k8s/values.yaml
+        echo "Generating sample.js in mounted/source/spaces-loadtests/selenium/control-server/control-client"
+        users=`expr $_NUMUSERS / $_BATCHSIZE`
+        if [[ "$_BATCHSIZE" == "1" ]];
+        then
+           users=$_NUMUSERS
+        fi
+        echo "Iterations will be: $users"
+        cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" > selenium/control-server/control-client/sample.js
+
+        # Update config files...
+        cd selenium/user-client/k8s
+        pwd
+        echo "Deleting existing users..."
+        echo y |task clean
+        echo "Uninstalling previous version of fakeuser"
+        helm uninstall fakeuser
+        echo "Starting fakeusers kubernetes cluster workload..."
+        task run-large-meeting-test
+        echo "Checking that fakeusers are registered to the control server..."
+        cd ../../control-server/control-client
+        #yarn config set cafile ../../../cloudbuild/ZscalerRootCertificate-2048-SHA256.crt
+        yarn install
+        connected="0"
+        while [[ $connected -lt $(($_NUMUSERS-5)) ]];
+        do
+           connected=`node client |grep "count" |sed "s/ //g" |awk -F ':' '{print $2}'  |sed "s/,//g"`
+           sleep 3
+           printf "$connected of $_NUMUSERS connected.\r"
+        done
+        node client
+        echo "Dispatching fakeusers to: $_SPACESLINK"
+        echo "Users will stay in space for: $_HOURS hours"
+        echo "Users will arrive in: $users iterations of $_BATCHSIZE at a time"
+        node sample
+        echo "Large meeting test started at: `date`"
+        echo "Test running at: $_SPACESLINK"
+        echo "Control Server IP: $controlserverip"
+
+    waitFor: [Prepare Large Meeting Test]
+
+timeout: 3600s
+
+options:
+  machineType: 'N1_HIGHCPU_8'

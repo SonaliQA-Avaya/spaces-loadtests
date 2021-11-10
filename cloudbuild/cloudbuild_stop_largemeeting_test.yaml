@@ -1,0 +1,58 @@
+# _DEPLOY_TO_CLUSTER_NAME
+# _CLUSTER_DOMAIN_URL
+# _BACKEND_GIT_BRANCH
+
+# gs://cloudbuild-esna-testing/slack-webhook-00.txt ---> testing account
+# gs://cloudbuild-esna-testing/workspace/slack-webhook-01.txt ---> esna development channel
+# sed -i.bak "s#/logan-testcase?#${_BUILD_ENV}_testcase?#g" /app/test/testcase-config.json
+
+substitutions:
+
+    _SCALE_DOWN: "false"
+
+steps:
+
+  # Cleanup Large Meeting Test
+  - id: Cleanup Large Meeting Test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        ls -l /
+
+        # Install go-task
+        dpkg -i files/go-task/task_linux_amd64.deb
+
+        # Install kubectl
+        cp files/kubectl/kubectl /usr/bin/kubectl
+        echo "Shutting down fake users..."
+        echo $_HOURS $_NUMUSERS $_BATCHSIZE $_SPACESLINK $_STOP_TEST $_BUILD_ENV $_LOADTEST_GIT_BRANCH $_CLUSTER_DOMAIN_URL
+        #echo "You must log in again..."
+        #gcloud auth login
+        pwd
+        gcloud container clusters get-credentials fake-user-cluster --project spaces-dev-practice1 --zone=us-east1-b
+        cd selenium/user-client/k8s
+        task clean
+        echo "Shutting down remote control server..."
+        gcloud compute instances stop loadtest --project spaces-dev-practice1 --zone=us-central1-a
+        echo "Scale down the GKE cluster? [y/n]"
+        read _SCALE_DOWN
+        if [[ "$_SCALE_DOWN" == "y" ]];
+        then
+           kubectl patch hpa $hpa_array[0] -p '{"spec":{"minReplicas": 3}}'
+           kubectl patch hpa $hpa_array[1] -p '{"spec":{"minReplicas": 4}}'
+           kubectl patch hpa $hpa_array[2] -p '{"spec":{"minReplicas": 1}}'
+           kubectl get hpa
+           echo "GKE cluster scaled down."
+        
+           echo "Scaling down fakeuser node pool..."
+           gcloud container clusters resize fake-user-cluster --node-pool fakeuser --num-nodes 0 --async
+        
+           echo "!!!! Remember to scale down the database as well!"
+        fi
+
+timeout: 3600s
+
+options:
+  machineType: 'N1_HIGHCPU_8'
