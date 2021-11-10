@@ -22,10 +22,10 @@ steps:
         ls -l /
 
         # Install go-task
-        dpkg -i files/go-task/task_linux_amd64.deb
+        dpkg -i cloudbuild/go-task/task_linux_amd64.deb
 
         # Install kubectl
-        cp files/kubectl/kubectl /usr/bin/kubectl
+        cp cloudbuild/kubectl/kubectl /usr/bin/kubectl
         echo "Shutting down fake users..."
         echo $_HOURS $_NUMUSERS $_BATCHSIZE $_SPACESLINK $_STOP_TEST $_BUILD_ENV $_LOADTEST_GIT_BRANCH $_CLUSTER_DOMAIN_URL
         #echo "You must log in again..."
