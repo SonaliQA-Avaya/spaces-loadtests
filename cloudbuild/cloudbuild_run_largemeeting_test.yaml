@@ -71,7 +71,6 @@ steps:
            large_minsocket="20"
            large_mintask="20"
            echo "ZONE: $zone CLUSTER: $cluster"
-           #echo "Getting credentials for cluster: $cluster"
            gcloud container clusters get-credentials --project $project --zone $zone $cluster
         
            kubectl get hpa > /tmp/hpa
@@ -125,10 +124,6 @@ steps:
 
         echo "Installing apt-transport-https and ca-certificates"
         apt-get update && apt-get install apt-transport-https ca-certificates
-        #curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-        #chmod 700 get_helm.sh
-        #./get_helm.sh
-        #curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
         echo "Installing Google Cloud SDK..."
         echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
