@@ -138,10 +138,6 @@ steps:
         cp cloudbuild/helm/helm /usr/bin/helm
         cp cloudbuild/kubectl/kubectl /usr/bin/kubectl
 
-        #apt update
-        #apt install -y apt-transport-https ca-certificates 
-        #apt upgrade -y curl
-
         #curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 
         echo "Node version:"
@@ -177,7 +173,6 @@ steps:
            exit -1
         fi
 
-        #ln -s /usr/bin/nodejs /usr/bin/node
         echo "Simulating $_NUMUSERS fake users"
         echo "User arrival rate: $_BATCHSIZE"
         echo "Hours to run test: $_HOURS"
