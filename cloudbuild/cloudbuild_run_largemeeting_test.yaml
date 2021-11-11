@@ -25,6 +25,7 @@ steps:
         echo "Preparing to run load test..."
         echo "Starting remote Control Server VM..."
 
+        echo $_SPACESLINK > /workspace/SPACESLINK
         gcloud compute instances start loadtest --project spaces-dev-practice1 --zone=us-central1-a 2>&1 |tee /workspace/STARTCONTROLSERVER
         controlserverip=`cat /workspace/STARTCONTROLSERVER |grep external |rev | awk '{print $1}'|rev`
         if [[ "$controlserverip" != "" ]];
@@ -43,7 +44,7 @@ steps:
         then
            # Scale the fake-user-cluster up from 5 to at least 100 to speed things up
            echo "Scaling up fakeuser cluster... this will take some time."
-           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async
+           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async 
         else
            echo "There are already $numnodes nodes in the cluster.  Skipping resize..."
         fi
@@ -161,7 +162,7 @@ steps:
         #curl -O https://taskfile.dev/install.sh
         #sh ./install.sh -b /usr/bin
 
-        which task
+       _SPACESLINK=`cat /tmp/workspace/SPACESLINK`
 
         echo "go-task version:"
         task version
