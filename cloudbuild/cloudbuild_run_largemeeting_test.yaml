@@ -51,7 +51,7 @@ steps:
 
         echo "Getting current GKE context..."
         kubectl config current-context
-        if [[ "_SPACESLINK" == "" ]];
+        if [[ "$_SPACESLINK" == "" ]];
         then
            echo "_SPACESLINK is not defined"
            exit -1
