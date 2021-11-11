@@ -40,6 +40,13 @@ steps:
         read _SCALE_DOWN
         if [[ "$_SCALE_DOWN" == "y" ]];
         then
+           hpa_front="spaces-frontend"
+           hpa_socket="spaces-socket"
+           hpa_task="spaces-task"
+
+           #echo "$minfront $minsocket $mintask"
+           hpa_array=($hpa_front $hpa_socket $hpa_task)
+
            kubectl patch hpa $hpa_array[0] -p '{"spec":{"minReplicas": 3}}'
            kubectl patch hpa $hpa_array[1] -p '{"spec":{"minReplicas": 4}}'
            kubectl patch hpa $hpa_array[2] -p '{"spec":{"minReplicas": 1}}'
