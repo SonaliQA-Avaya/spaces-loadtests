@@ -163,7 +163,6 @@ steps:
         #sh ./install.sh -b /usr/bin
 
         _SPACESLINK=`cat /workspace/SPACESLINK`
-        cat /workspace/SPACESLINK
         echo "SPACESLINK is: $_SPACESLINK"
 
         echo "go-task version:"
