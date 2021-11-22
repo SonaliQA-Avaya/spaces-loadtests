@@ -44,7 +44,7 @@ steps:
         then
            # Scale the fake-user-cluster up from 5 to at least 100 to speed things up
            echo "Scaling up fakeuser cluster... this will take some time."
-           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async 
+           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async --quiet
         else
            echo "There are already $numnodes nodes in the cluster.  Skipping resize..."
         fi
