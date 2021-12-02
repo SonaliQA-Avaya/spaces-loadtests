@@ -31,7 +31,7 @@ steps:
         #echo "You must log in again..."
         #gcloud auth login
         pwd
-        gcloud container clusters get-credentials fake-user-cluster --project spaces-dev-practice1 --zone=us-east1-b
+        gcloud container clusters get-credentials fake-user-cluster-2022 --project spaces-dev-practice1 --zone=us-east1-b
         cd selenium/user-client/k8s
         task clean
         echo "Shutting down remote control server..."
@@ -54,7 +54,7 @@ steps:
            echo "GKE cluster scaled down."
         
            echo "Scaling down fakeuser node pool..."
-           gcloud container clusters resize fake-user-cluster --node-pool fakeuser --num-nodes 0 --async
+           gcloud container clusters resize fake-user-cluster-2022 --node-pool fakeuser --num-nodes 0 --async
         
            echo "!!!! Remember to scale down the database as well!"
         fi

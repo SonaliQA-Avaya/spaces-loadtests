@@ -151,20 +151,14 @@ steps:
         _SPACESLINK=`cat /workspace/SPACESLINK`
         echo "SPACESLINK is: $_SPACESLINK"
 
-        echo "go-task version:"
-        task version
-
         controlserverip=`cat /workspace/STARTCONTROLSERVER |grep external |rev | awk '{print $1}'|rev`
-        if [[ "$controlserverip" != "" ]];
+        if [[ "$controlserverip" == "" ]];
         then
-           echo "Control Server IP: $controlserverip"
-        else
            echo "Could not determine control server IP..."
            exit -1
         fi
-
-        echo "Simulating $_NUMUSERS fake users"
-        echo "User arrival rate: $_BATCHSIZE"
+        echo "Control Server IP: $controlserverip"
+        echo "Simulating $_NUMUSERS fake users with arrival rate: $_BATCHSIZE"
         echo "Hours to run test: $_HOURS"
         milliseconds=`expr $_HOURS \* 3600000`
         echo Test will run for $milliseconds ms
@@ -192,7 +186,6 @@ steps:
 
         # Update config files...
         cd selenium/user-client/k8s
-        pwd
         echo "Deleting existing users..."
         echo y |task clean
         echo "Uninstalling previous version of fakeuser"
