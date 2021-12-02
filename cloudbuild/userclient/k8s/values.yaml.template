@@ -3,8 +3,7 @@ controlServerIP: _CONTROL_SERVER_IP_
 
 image:
   repository: gcr.io/spaces-dev-practice1/testing-client
-  #pullPolicy: Always
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: latest
 
 resources:
