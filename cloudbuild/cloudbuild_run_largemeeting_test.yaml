@@ -139,7 +139,7 @@ steps:
         apt-get update && apt-get install gnupg google-cloud-sdk
  
         echo "Removing previous logs and screenshots..."
-        gsutil -m rm "gs://rajiv-testing-selenium-screenshots/*"
+        gsutil -m rm -f "gs://rajiv-testing-selenium-screenshots/*"
 
         cp cloudbuild/helm/helm /usr/bin/helm
         cp cloudbuild/kubectl/kubectl /usr/bin/kubectl
