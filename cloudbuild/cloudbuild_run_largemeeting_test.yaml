@@ -138,7 +138,6 @@ steps:
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
         apt-get update && apt-get install gnupg google-cloud-sdk
  
-        # Clean out the errors and screenshots from the log bucket
         echo "Removing previous logs and screenshots..."
         gsutil -m rm gs://rajiv-testing-selenium-screenshots/*
 
@@ -159,9 +158,8 @@ steps:
         fi
         echo "Control Server IP: $controlserverip"
         echo "Simulating $_NUMUSERS fake users with arrival rate: $_BATCHSIZE"
-        echo "Hours to run test: $_HOURS"
         milliseconds=`expr $_HOURS \* 3600000`
-        echo Test will run for $milliseconds ms
+        echo "Hours to run test: $_HOURS, milliseconds: $milliseconds"
         echo "Generating config.js in selenium/control-server"
         cat cloudbuild/controlserver/config.js.template |sed "s/_CONTROL_SERVER_IP_/$controlserverip/g" > selenium/control-server/config.js
         echo "Generating config.js in selenium/control-server/control-client"
@@ -176,10 +174,8 @@ steps:
         fi
         echo "Iterations will be: $users"
         project=`cat /workspace/project`
-        if [[ "$project" == "onesnastaging" ]];
-        then
-           cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" > selenium/control-server/control-client/sample.js
-        elif [[ "$project" == "onesnatesting" ]];
+        cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" > selenium/control-server/control-client/sample.js
+        if [[ "$project" == "onesnatesting" ]];
         then
            cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" |sed "s/\"staging\"/\"testing\"/g" > selenium/control-server/control-client/sample.js
         fi 
@@ -194,7 +190,6 @@ steps:
         task run-large-meeting-test
         echo "Checking that fakeusers are registered to the control server..."
         cd ../../control-server/control-client
-        #yarn config set cafile ../../../cloudbuild/ZscalerRootCertificate-2048-SHA256.crt
         yarn install
         connected="0"
         while [[ $connected -lt $(($_NUMUSERS-5)) ]];
@@ -204,13 +199,12 @@ steps:
            printf "$connected of $_NUMUSERS connected.\r"
         done
         node client
-        echo "Dispatching fakeusers to: $_SPACESLINK"
+        echo "Dispatching fakeusers to: $_SPACESLINK."
         echo "Users will stay in space for: $_HOURS hours"
         echo "Users will arrive in: $users iterations of $_BATCHSIZE at a time"
         node sample
         echo "Large meeting test started at: `date`"
-        echo "Test running at: $_SPACESLINK"
-        echo "Control Server IP: $controlserverip"
+        echo "Test running at: $_SPACESLINK, Control Server IP: $controlserverip"
 
     waitFor: [Prepare Large Meeting Test]
 
