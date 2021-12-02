@@ -38,13 +38,13 @@ steps:
 
         gcloud config set project spaces-dev-practice1
         gcloud container clusters list |tee /tmp/clusters
-        numnodes=`cat /tmp/clusters |grep "fake-user-cluster" |awk '{print $7}'`
-        gcloud container clusters get-credentials fake-user-cluster --zone us-east1-b
+        numnodes=`cat /tmp/clusters |grep "fake-user-cluster-2022" |awk '{print $7}'`
+        gcloud container clusters get-credentials fake-user-cluster-2022 --zone us-east1-b
         if [[ $numnodes -lt 100 ]];
         then
-           # Scale the fake-user-cluster up from 5 to at least 100 to speed things up
+           # Scale the fake-user-cluster-2022 up from 5 to at least 100 to speed things up
            echo "Scaling up fakeuser cluster... this will take some time."
-           gcloud container clusters resize fake-user-cluster --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async --quiet
+           gcloud container clusters resize fake-user-cluster-2022 --node-pool="fakeuser" --num-nodes=100 --project="spaces-dev-practice1" --zone=us-east1-b --async --quiet
         else
            echo "There are already $numnodes nodes in the cluster.  Skipping resize..."
         fi
@@ -62,7 +62,15 @@ steps:
         then
            cluster="loganstaging-default"
            project="onesnastaging"
+        elseif [[ "$system" == "loganstaging2020.esna.com" ]]; 
+           cluster="loganstaging-2020-default"
         fi
+        if [[ "$system" == "logantesting.esna.com" ]];
+        then
+           cluster="spaces2"
+           project="onesnatesting"
+        fi
+        echo $project > /workspace/project
         echo "Determining zone for cluster: $cluster"
         zone=`gcloud container clusters list --project $project |grep $cluster |awk '{print $2}'`
 
@@ -130,7 +138,6 @@ steps:
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
         apt-get update && apt-get install gnupg google-cloud-sdk
  
-        #gcloud info --format="value(installation.sdk_root)"
         # Clean out the errors and screenshots from the log bucket
         echo "Removing previous logs and screenshots..."
         gsutil -m rm gs://rajiv-testing-selenium-screenshots/*
@@ -138,25 +145,8 @@ steps:
         cp cloudbuild/helm/helm /usr/bin/helm
         cp cloudbuild/kubectl/kubectl /usr/bin/kubectl
 
-        #curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-
-        echo "Node version:"
-        node --version
-
-        echo "Yarn version:"
-        yarn --version
-
-        echo "helm version:"
-        helm version
-
-        echo "kubectl version:"
-        kubectl version
-
         # Install go-task
         dpkg -i cloudbuild/go-task/task_linux_amd64.deb
-
-        #curl -O https://taskfile.dev/install.sh
-        #sh ./install.sh -b /usr/bin
 
         _SPACESLINK=`cat /workspace/SPACESLINK`
         echo "SPACESLINK is: $_SPACESLINK"
@@ -191,7 +181,14 @@ steps:
            users=$_NUMUSERS
         fi
         echo "Iterations will be: $users"
-        cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" > selenium/control-server/control-client/sample.js
+        project=`cat /workspace/project`
+        if [[ "$project" == "onesnastaging" ]];
+        then
+           cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" > selenium/control-server/control-client/sample.js
+        elif [[ "$project" == "onesnatesting" ]];
+        then
+           cat cloudbuild/controlclient/sample.js.template |sed "s|_SPACES_LINK_|$_SPACESLINK|g" |sed "s/_NUM_USERS_/$users/g" | sed "s/_STAY_TIME_/$milliseconds/g" |sed "s/_USER_BATCHSIZE_/$_BATCHSIZE/g" |sed "s/\"staging\"/\"testing\"/g" > selenium/control-server/control-client/sample.js
+        fi 
 
         # Update config files...
         cd selenium/user-client/k8s

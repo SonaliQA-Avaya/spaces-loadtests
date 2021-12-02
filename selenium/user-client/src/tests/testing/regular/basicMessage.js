@@ -42,12 +42,31 @@ class BasicMessage extends EventEmitter{
             if(this.exitTriggered){
                 break
             }
+            // Check if we are in the meeting
+            let bInMeeting = await this.checkIfInMeeting()
+            if(bInMeeting){
+                // console.log("In Meeting")
+            }else{
+                console.log("Not In Meeting")
+                throw new Error("User Surprisingly Not In Meeting")
+            }
+        }
+    }
+
+    async checkIfInMeeting(){
+        let meetingXPath = '//*[@id="VideoContainer"]/div/div[3]'
+        let bFound =  await this.driver.findElement(By.xpath(meetingXPath)).catch(err=>{
+            console.log("error trying to find the meeting button ", err)
+        })
+        if(bFound){
+            return true
+        }else{
+            return false
         }
     }
 
     async start(){
         try{
-            console.log("starting")
             this.on("sendMessage",async ()=>{
                 console.log("received send message request")
                 if(this.messageAvailable){
@@ -67,34 +86,31 @@ class BasicMessage extends EventEmitter{
                 }
             })
             await this.goToSpaces()
-
             let bTrue = await this.isOnAccounts()
-            console.log("is on accounts")
             if(bTrue){
                 let guestLogin = await this.isGuestJoin()
                 if(guestLogin){
                     await this.clickToSignIn()
                 }
-                console.log("should login")
                 await delay(5000)
-                await this.loginRetry()
+                await this.login()
             }else{
                 let guestLogin = await this.isGuestJoin()
                 if(guestLogin){
                     await this.clickToSignIn()
                 }
                 await delay(5000)
-                console.log("should login")
-                await this.loginRetry()
+                await this.login()
             }
             let bTerms = await this.checkTermsOfUser()
             if(bTerms){
                 await this.acceptTerms()
-                await delay(10000)
+                await delay(5000)
             }
+            await this.continueLastLogin()
             await this.waitUntilSpaceLoaded()
             console.log("should be in meeting right now")
-            await this.joinMeetingRetry()
+            await this.joinMeeting()
             await this.acceptPreviewMeeting()
             this.messageAvailable = true
             await this.idleStay(this.stayTime)
@@ -102,7 +118,7 @@ class BasicMessage extends EventEmitter{
         }catch(e){
             await delay(2000)
             this.emit("error",e)
-            await delay(2000)
+            await delay(20000)
             await this.backToGoogle()
         }
         await this.cleanBrowser()
@@ -122,6 +138,23 @@ class BasicMessage extends EventEmitter{
         }
     }
 
+
+    async continueLastLogin(){
+        let xpath = "/html/body/div[2]/div[2]/div/div/div/form/fieldset/div/button"
+        let tryCount = 0;
+        let maxTry = 5
+        while(tryCount < maxTry){
+            try{
+                await this.driver.findElement(By.xpath(xpath)).click()
+                break
+            }catch(e){
+                console.log("error clicking last login", e)
+                tryCount++
+                await delay(5000)
+            }
+        }
+    }
+
     async acceptTerms(){
         let acceptButtonXPath = '//*[@id="root"]/div/button'
         await this.driver.findElement(By.xpath(acceptButtonXPath)).click()
@@ -132,7 +165,7 @@ class BasicMessage extends EventEmitter{
     }
     async isOnAccounts(){
         const url = await this.driver.getCurrentUrl()
-        const accounts = "onesnatesting.esna.com/"
+        const accounts = "onesnastaging.esna.com/"
         return url.indexOf(accounts) != -1
     }
     async isGuestJoin(){
@@ -145,157 +178,6 @@ class BasicMessage extends EventEmitter{
         await this.driver.findElement(By.xpath(signInFromGuestXPath)).click()
         await delay(5000)
     }
-
-    async findUsername(){
-        let emailXPath = '//*[@id="UsernameInput"]/input'
-        let emailElement = await this.driver.findElement(By.xpath(emailXPath))
-        return true
-    }
-
-    async findUsernameRetry(){
-        let maxTryCount = 10;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            let response = await this.findUsername().catch(async (e)=>{
-                console.log("error finding username")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(2000)
-            })
-            if(response) {
-                console.log("found username")
-                break
-            }
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-
-    async sendUsername(){
-        let emailXPath = '//*[@id="UsernameInput"]/input'
-        let emailElement = await this.driver.findElement(By.xpath(emailXPath))
-        await emailElement.sendKeys(this.username)
-        return true
-    }
-
-    async sendUsernameRetry(){
-        let maxTryCount = 10;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            let response = await this.sendUsername().catch(async (e)=>{
-                console.log("error finding username")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(2000)
-            })
-            if(response) break
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-
-    async findPassword(){
-        let passwordXPath = '//*[@id="PasswordInput"]/input'
-        let passwordElement = await this.driver.findElement(By.xpath(passwordXPath))
-        return true
-    }
-    async findPasswordRetry(){
-        let maxTryCount = 10;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            let response = await this.findPassword().catch(async (e)=>{
-                console.log("error finding password")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(3000)
-            })
-            if(response) break
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-    async sendPassword(){
-        let passwordXPath = '//*[@id="PasswordInput"]/input'
-        let passwordElement = await this.driver.findElement(By.xpath(passwordXPath))
-        await passwordElement.sendKeys(this.password)
-        return true
-    }
-    async sendPasswordRetry(){
-        let maxTryCount = 20;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            let response = await this.sendPassword().catch(async (e)=>{
-                console.log("error sending password")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(3000)
-            })
-            if(response) break
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-
-    async signInClickRetry(){
-        let maxTryCount = 10;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            let response = await this.signInClick().catch(async (e)=>{
-                console.log("error clicking sign in")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(3000)
-            })
-            if(response) break
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-
-    async signInClick(){
-        let signInButtonXPath = '//*[@id="GetStartedBtn"]'
-        let signInElement = await this.driver.findElement(By.xpath(signInButtonXPath)).click()
-        return true
-    }
-
-    async loginRetry(){
-        await this.findUsernameRetry()
-        await this.sendUsernameRetry()
-        await this.findPasswordRetry()
-        await this.sendPasswordRetry()
-        await this.signInClickRetry()
-    }
-
     async login(){
         let emailXPath = '//*[@id="UsernameInput"]/input'
         let passwordXPath = '//*[@id="PasswordInput"]/input'
@@ -312,39 +194,14 @@ class BasicMessage extends EventEmitter{
         await delay(10000)
     }
 
-    async joinMeetingRetry(){
-        let maxTryCount = 10;
-        let start = 0;
-        let error 
-        while(maxTryCount >= start){
-            console.log("should be joining meeting")
-            let response = await this.joinMeeting().catch(async (e)=>{
-                console.log("error clicking")
-                start += 1
-                if(maxTryCount == start){
-                    error = e
-                }
-                await delay(4000)
-            })
-            if(response) break
-        }
-        if(error){
-            throw new Error(error)
-        }else{
-            return true
-        } 
-    }
-
     async joinMeeting(){
-        let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/button'
+        let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/div/button'
         let buttonElement = await this.driver.findElement(By.xpath(meetingButtonXPath)).click()
-        await delay(1000)
-        return true
-        // throw new Error("fake Error")
+        await delay(10000)
     }
 
     async acceptPreviewMeeting(){
-        let joinButtonXPath = '/html/body/div/div/div[3]/div[3]/div[6]/div/div[1]/div/div/div/div[3]/div/button'
+        let joinButtonXPath = '/html/body/div/div/div[3]/div[3]/div[6]/div/div/div[1]/div/div/div/div[3]/div/button'
         let buttonElement = await this.driver.findElement(By.xpath(joinButtonXPath)).click()
     }
 
@@ -363,34 +220,30 @@ class BasicMessage extends EventEmitter{
         // Send the message
     }
 
-    // async waitUntilSpaceLoaded(){
-    //     // Handle throwing of error.
-    //     console.log("waiting till space loaded")
-    //     // let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/button'
-    //     // let condition = until.elementIsVisible(this.driver.findElement(By.xpath(meetingButtonXPath)))
-    //     // let waitResponse = await this.driver.wait(condition,60000).catch(err=>{
-    //     //     console.log("wait failed")
-    //     // })
-    //     await delay(30000)
-    //     // if(!waitResponse){
-    //     //     throw new Error("space took too long to load.")
-    //     // }
-    // }
-
     async waitUntilSpaceLoaded(){
-        await delay(5000)
+        // Handle throwing of error.
+        console.log("waiting till space loaded")
+        // let meetingButtonXPath = '//*[@id="VideoContainer"]/div/div[1]/div/div/button'
+        // let condition = until.elementIsVisible(this.driver.findElement(By.xpath(meetingButtonXPath)))
+        // let waitResponse = await this.driver.wait(condition,60000).catch(err=>{
+        //     console.log("wait failed")
+        // })
+        await delay(30000)
+        // if(!waitResponse){
+        //     throw new Error("space took too long to load.")
+        // }
     }
 
     genMessagePayload(){
         const traceId = uuidv4()
         const browserId = process.env.browserId
         const now = new Date()
-        let message = `TraceId:${traceId}_browserId:${browserId}_time:${now.toString()}`
+        let message = `traceId:${traceId}_browserId:${browserId}_time:${now.toString()}`
         return message
     }
 
     async sendMessage(){
-        let textBoxSelectorXPath = '/html/body/div/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[1]/div[2]/div'
+        let textBoxSelectorXPath = '//*[@id="root"]/div/div[2]/div[3]/div[3]/div[8]/div[1]/div[2]/div[1]/div/div/div[1]/p'
         let message  = this.genMessagePayload()
         await this.driver.findElement(By.xpath(textBoxSelectorXPath)).sendKeys(message)
         await delay(500)

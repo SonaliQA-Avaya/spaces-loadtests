@@ -3,8 +3,8 @@ version: '2'
 
 vars:
   GCP_PROJECT: spaces-dev-practice1
-  CLUSTER: fake-user-cluster
-  KUBE_CONTEXT: gke_spaces-dev-practice1_us-east1-b_fake-user-cluster
+  CLUSTER: fake-user-cluster-2022
+  KUBE_CONTEXT: gke_spaces-dev-practice1_us-east1-b_fake-user-cluster-2022
 
 tasks:
   kube-context:
