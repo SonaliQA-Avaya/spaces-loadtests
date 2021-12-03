@@ -207,6 +207,7 @@ steps:
         echo "Test running at: $_SPACESLINK, Control Server IP: $controlserverip"
 
     waitFor: [Prepare Large Meeting Test]
+    timeout: 1800s
 
 timeout: 3600s
 
