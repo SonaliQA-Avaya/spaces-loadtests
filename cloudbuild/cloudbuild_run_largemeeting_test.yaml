@@ -158,7 +158,8 @@ steps:
         fi
         echo "Control Server IP: $controlserverip"
         echo "Simulating $_NUMUSERS fake users with arrival rate: $_BATCHSIZE"
-        milliseconds=`expr $_HOURS \* 3600000`
+        #milliseconds=`expr $_HOURS \* 3600000`
+        milliseconds=`echo "($_HOURS * 3600000)/1" |bc`
         echo "Hours to run test: $_HOURS, milliseconds: $milliseconds"
         echo "Generating config.js in selenium/control-server"
         cat cloudbuild/controlserver/config.js.template |sed "s/_CONTROL_SERVER_IP_/$controlserverip/g" > selenium/control-server/config.js
