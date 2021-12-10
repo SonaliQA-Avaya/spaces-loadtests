@@ -65,7 +65,7 @@ steps:
         elseif [[ "$system" == "loganstaging2020.esna.com" ]]; 
            cluster="loganstaging-2020-default"
         fi
-        if [[ "$system" == "logantesting.esna.com" ] || [ "$system" == "logantesting-candidate.esna.com"]];
+        if [[ "$system" == "logantesting.esna.com" || "$system" == "logantesting-candidate.esna.com" ]];
         then
            cluster="spaces2"
            project="onesnatesting"
