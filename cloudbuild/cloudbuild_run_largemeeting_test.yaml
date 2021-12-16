@@ -193,7 +193,7 @@ steps:
         cd ../../control-server/control-client
         yarn install
         connected="0"
-        while [[ $connected -lt $(($_NUMUSERS-5)) ]];
+        while [[ $connected -lt $(($_NUMUSERS-10)) ]];
         do
            connected=`node client |grep "count" |sed "s/ //g" |awk -F ':' '{print $2}'  |sed "s/,//g"`
            sleep 3
