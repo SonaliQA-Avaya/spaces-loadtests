@@ -58,7 +58,7 @@ steps:
         fi
         echo "Using Spaces link: $_SPACESLINK"
         system=`echo $_SPACESLINK |awk -F '/' '{print $3}'`
-        if [[ "$system" == "loganstaging.esna.com" ]];
+        if [[ "$system" == "loganstaging.esna.com" ]] || [[ "$system" == "loganstaging2.esna.com" ]];
         then
            cluster="loganstaging-default"
            project="onesnastaging"
