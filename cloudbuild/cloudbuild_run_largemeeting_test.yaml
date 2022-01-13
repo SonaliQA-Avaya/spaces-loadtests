@@ -58,17 +58,17 @@ steps:
         fi
         echo "Using Spaces link: $_SPACESLINK"
         system=`echo $_SPACESLINK |awk -F '/' '{print $3}'`
-        if [[ "$system" == "loganstaging.esna.com" ]] || [[ "$system" == "loganstaging2.esna.com" ]];
+        if [[ "$system" == "loganstaging.esna.com" ]];
         then
            cluster="loganstaging-default"
            project="onesnastaging"
         elseif [[ "$system" == "loganstaging2020.esna.com" ]]; 
            cluster="loganstaging-2020-default"
         fi
-        if [[ "$system" == "logantesting.esna.com" ]] || [[ "$system" == "logantesting-candidate.esna.com" ]];
+        if [[ "$system" == "loganstaging2.esna.com" ]];
         then
-           cluster="spaces2"
-           project="onesnatesting"
+           cluster="loganstaging2-gke"
+           project="onesnastaging"
         fi
         echo $project > /workspace/project
         echo "Determining zone for cluster: $cluster"
