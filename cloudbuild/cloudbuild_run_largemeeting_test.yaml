@@ -103,9 +103,7 @@ steps:
               then 
                  echo "############################################################"
                  echo "# The minimum number of PODs for ${hpa_array[$i]} is too low."
-                 echo "#"
                  echo "# Required: ${hpa_largearray[$i]}, actual: ${hpa_curarray[$i]}"
-                 echo "#"
                  echo "###########################################################"
                  echo "Fixing HPA: ${hpa_array[$i]}"
                  if [[ "${hpa_array[$i]}" == "spaces-task" ]];
