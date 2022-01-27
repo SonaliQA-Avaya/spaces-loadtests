@@ -13,7 +13,7 @@ const {controlServerIP} = require("./config") // communication assumed on port 8
 const spacesLink = "_SPACES_LINK_"
 const environment = "staging"
 const testType = "basicMessage"
-const stayTime = _STAY_TIME_
+const stayTime = "_STAY_TIME_"
 const delay = (ms) => {
     return new Promise((resolve)=>{
         setTimeout(resolve,ms)
