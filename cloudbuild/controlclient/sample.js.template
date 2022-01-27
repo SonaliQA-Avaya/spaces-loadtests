@@ -40,12 +40,6 @@ const run = async () => {
 //     console.log("triggerMessageFlood ", response)
 }
 
-modules.export.stopUsers = async() => {
-   let count = _NUM_USERS_
-   response = await stopUsers(controlServerIP,count)
-   console.log( "complete")
-}
-
 run().then(()=>{
     console.log("complete")
 })
